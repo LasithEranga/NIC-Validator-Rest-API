@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package lk.kln.mit.restapi.model;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -19,21 +18,15 @@ import lk.kln.mit.restapi.Database.Database;
  */
 public class User {
        
-    private String nic;
+    private String nic;       
+    private String oldNic;    
     private String fullName;
     private String address;
     private Date dob;
     private String nationality;
+    private String gender;
     private int age;
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
+    
     public User(){
         
     };
@@ -47,8 +40,21 @@ public class User {
         this.gender = gender;
     }
 
-    private String gender;
+    public int getAge() {
+        return age;
+    }
 
+    public void setAge(int age) {
+        this.age = age;
+    }
+    
+    public String getOldNic() {
+        return oldNic;
+    }
+
+    public void setOldNic(String oldNic) {
+        this.oldNic = oldNic;
+    }
 
     public String getNic() {
         return nic;
@@ -148,9 +154,8 @@ public class User {
             }
     }
     
-    public static String update(User user,String oldNic){
-    
-        String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"' WHERE nic='"+oldNic+"'";
+    public static String update(User user){
+        String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"' WHERE nic='"+user.getOldNic()+"'";
             try(Connection conn = Database.getConnection()){
 
                 Statement statement = conn.createStatement();
@@ -181,7 +186,5 @@ public class User {
 
         }
     }
-    
-
 
 }

@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package lk.kln.mit.restapi.controller;
-
 import com.google.gson.Gson;
 import java.util.List;
 import javax.ws.rs.core.Context;
@@ -15,9 +14,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
+import javax.ws.rs.core.MultivaluedMap;
 import lk.kln.mit.restapi.model.User;
 
 /**
@@ -44,11 +43,13 @@ public class UserController {
     @GET
     @Path("all-users")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllUsers() {
-        
+    public String getAllUsers(@Context HttpHeaders header) {
+        MultivaluedMap<String, String> headerParams = header.getRequestHeaders();
+        System.out.println(headerParams);
         List<User> users = User.find();
         
         return new Gson().toJson(users);
+        
     }
     
     @POST
@@ -59,6 +60,14 @@ public class UserController {
         
         return User.save(user);
         
+    }
+     
+    @POST
+    @Path("update-user")    
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String updateUser(User user) {
+        return User.update(user);       
     }
     
     @POST

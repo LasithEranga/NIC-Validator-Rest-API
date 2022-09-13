@@ -56,7 +56,7 @@ public class UserController {
     @Path("new-user")    
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String newUser(User user) {
+    public String newUser(@Context HttpHeaders header, User user) {
         
         return User.save(user);
         

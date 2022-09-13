@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIC Validator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <script src="https://kit.fontawesome.com/4f128951c5.js" crossorigin="anonymous"></script>
+  <style>
+   @media screen and (max-width: 480px) {
+      .toast-container {
+        left:5%;
+      }
+      .modal-dialog-centered{
+        left:10%!important;
+      }
+    }
+    @media screen and (min-width: 480px) {
+      .toast-container {
+        left:0%;
+      }
+    }
+    .fixed-lines{
+      overflow: hidden;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .content-height{
+      line-height: 1.5rem;
+      min-height: 13.5rem;
+      max-height: 13.5rem;
+    }
+    .pb-10{
+      padding-bottom:6rem!important;
+    }
+  </style>
+</head>
+<body>
+  
+  <header>
+    <div class="d-flex bg-light py-3 shadow"> 
+
+        <div class="col col-lg-6 ps-3 fs-3 fw-bold">
+          User Management System
+        </div>
+
+
+    </div>
+  </header>
+
+  <div class="container-fluid p-lg-4">
+    <div class="justify-content-start align-items-top p-2 gap-0 " style="background-color:#EBEBEB;height: 80vh;overflow-y: scroll;">
+    
+      <div class="fs-2 fw-bold">Users</div>
+
+      <div class="text-start" id="no-info">
+        <span class="text-nowrap">Sorry! No users available to show ... <span> <a href="/add-new" class="d-block d-md-inline ms-md-3 text-start"> Add user</a>
+      </div>
+
+      <div id="content" class="d-flex flex-wrap pb-10 pb-lg-0">
+       
+      </div>
+    </div>
+  </div>
+<a href="/add-new" class="bg-secondary position-fixed rounded-circle d-flex justify-content-center align-items-center btn border-0" style="bottom: 40px;right: 40px; width: 50px;height: 50px;"><i class="fa-solid fa-user-plus text-light ps-1"></i></div></a>
+
+
+<!-- Toast message -->
+<div class="toast-container position-fixed bottom-0 p-3" style="width:20rem;">
+  <div id="toast" class="toast" role="alert">
+    <div class="toast-header">
+      <i class="fa-sharp fa-solid fa-circle-info text-primary me-2"></i>
+      <strong class="me-auto">NIC Validator</strong>
+      <small>Just now</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body bg-light mt-0">
+      ${message}
+    </div>
+  </div>
+</div>
+
+<!-- Modal dialog  -->
+<div class="modal fade" id="deleteModal" tabindex="-1" >
+  <div class="modal-dialog modal-dialog-centered" >
+    <div class="modal-content rounded-0 border-0" style="width:80%">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Delete User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body border-0">
+      Are you sure you want to remove this user?
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-primary rounded-1" id="btnOkay">Yes</button>
+        <button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    
+    <script>
+    
+      const haveData = 1;
+      const noInfo = document.getElementById("no-info");
+      const content = document.getElementById("content");
+      const toastMessage = document.getElementById('toast');
+
+
+      const getdetails = async () => {
+        
+      }
+
+
+      //fetch data from api
+      const getUsers = async () => {
+      let users = [];
+      
+      await fetch('http://localhost:8080/RestAPI/NICValidator/user/all-users', {
+        method:'GET',
+        headers:{
+          'Content-type':'application/json'
+        }
+      })
+      .then((response)=>response.json())
+      .then((data) => {
+        users = data
+        console.log(users.length)
+
+      })
+      .catch((error)=>{
+        console.log(error)
+      });
+
+      //display no info dialog if no users are available in database.
+      if(users.length === 0){
+        content.style.display = "none";
+        noInfo.style.display = "unset";
+
+      }
+      else{
+        noInfo.style.display = "none";
+        content.style.display = "unset";
+        let contentHtml = "";
+        users.forEach(user => {
+          let dob = new Date(user.dob).getFullYear();
+          let currentYear = new Date().getFullYear();
+          let age = currentYear - dob;
+          let iconColor = "";
+          let iconLetter = "";
+          if(user.gender == "Male"){
+            iconColor = "bg-primary"
+            iconLetter = "M";
+          }else{
+            iconColor = "bg-danger "
+            iconLetter = "F";
+          }
+          contentHtml +=  `
+          <div class="col-12 col-lg-3 p-2">
+          <div class="border position-relative p-3 bg-light shadow">
+            <div class="`+iconColor+` text-light position-absolute rounded-circle d-flex justify-content-center align-items-center " style="top: 15px;right: 15px; width: 35px;height: 35px;">`+iconLetter+`</div>
+            <div class="col-12 content-height">
+            <div class="d-flex">
+              <div class="col-3">Name</div>
+              <span>:</span>
+              <div class="col-8 ps-2 fixed-lines">`+user.fullName+`</div>
+            </div>
+            <div class="d-flex">
+              <div class="col-3">Birthday</div>
+              <span>:</span>
+              <div class="col-5 ps-2">`+user.dob+`</div>
+            </div>
+
+            <div class="d-flex">
+              <div class="col-3">NIC</div>
+              <span>:</span>
+              <div class="col-5 ps-2">`+user.nic+`</div>
+            </div>
+
+            <div class="d-flex">
+              <div class="col-3">Age</div>
+              <span>:</span>
+              <div class="col-5 ps-2">`+age+` yrs</div>
+            </div>
+
+            <div class="d-flex">
+              <div class="col-3">Address</div>
+              <span>:</span>
+              <div class="col-9 ps-2 fixed-lines">`+user.address+`</div>
+            </div>
+
+             <div class="d-flex justify-content-end position-absolute bottom-0 mb-3 end-0 me-3">
+              <div><button type="button" class="text-light bg-danger me-2 d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;" onClick="openDeleteWarning(${users.nic})"><i class="fa-solid fa-user-minus"></i></button></div>
+              <div><form action="/edit-user" method="GET"><input hidden value="`+user.nic+`" name="nic" /><button class="text-light bg-success d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;"><i class="fa-sharp fa-solid fa-user-pen"></i></button></form></div>
+            </div>
+          </div>
+          </div>
+          
+        </div>`
+        });
+
+        content.innerHTML = contentHtml;
+      }
+    }
+    getUsers();
+      
+      
+      
+
+
+      //show if there are any messages to show
+      // if(haveMessage){
+      //   new bootstrap.Toast(toastMessage).show();
+      // }
+
+      const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      const btnOkay = document.getElementById('btnOkay');
+      let formtosubmit;
+      const openDeleteWarning = (form) => {
+        formtosubmit = form;
+        deleteModal.show();
+        btnOkay.setAttribute('onClick',`modalOkayButtonClickHandler()`)
+      }
+
+      const modalOkayButtonClickHandler = () => {
+        deleteModal.hide()
+        console.log(formtosubmit)
+        formtosubmit.submit()
+        console.log("Done")
+      }
+
+      
+    </script>
+</body>
+</html>

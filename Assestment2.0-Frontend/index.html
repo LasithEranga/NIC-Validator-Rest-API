@@ -13,7 +13,7 @@
         left:5%;
       }
       .modal-dialog-centered{
-        left:10%!important;
+        left:0%!important;
       }
     }
     @media screen and (min-width: 480px) {
@@ -34,6 +34,16 @@
     }
     .pb-10{
       padding-bottom:6rem!important;
+    }
+    .v-none{
+      visibility: hidden;
+    }
+    .v-unset{
+      visibility: unset;
+    }
+    .error{
+      font-size: 0.7rem;
+      line-height: 0.6rem;
     }
   </style>
 </head>
@@ -70,30 +80,30 @@
 
 
 <!--Add/Update Modal dialog  -->
-<div class="modal fade" id="addUpdateModal" tabindex="-1" >
-  <div class="modal-dialog modal-dialog-centered" >
-    <div class="modal-content rounded-0 border-0">
+<div class="modal fade" id="addUpdateModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-height: 80vh;">
+    <div class="modal-content rounded-0 border-0 p-2">
       <div class="modal-header border-0">
-        <h5 class="modal-title" id="title">New User</h5>
+        <h5 class="modal-title fw-semibold" id="title">New User</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body border-0" >
         <div>
           <input id="old-nic" hidden  name="old-nic" class="w-100 form-control" />
           
-          <div class="d-md-flex justify-content-center mt-3 ">
+          <div class="d-md-flex justify-content-center mt-2 ">
             <label name="fullName"  class="col-12 col-md-4">Full Name:</label>
             <div class="w-100 mt-2 mt-md-0">
               <input id="fullName" onblur="validateName(fullNameField,fullNameError)"  class="w-100 form-control" />
-              <div class="ps-2 d-none text-danger" id="fullNameError"></div>
+              <div class="  v-none text-danger error pt-1" id="fullNameError">.</div>
             </div>
           </div>
           
-          <div class="d-md-flex justify-content-center mt-3">
+          <div class="d-md-flex justify-content-center mt-2">
             <label name="nic"  class="col-12 col-md-4">NIC No:</label>
             <div class="w-100 mt-2 mt-md-0">
               <input id="nic" onblur="generateDobGenderAge()" class="w-100 form-control" />
-              <div class="ps-2 d-none text-danger" id="nicError"></div>
+              <div class="  v-none text-danger error pt-1" id="nicError">.</div>
             </div>
           </div>
   
@@ -101,22 +111,22 @@
             <label name="dob"  class="col-12 col-md-4">Date of birth:</label>
             <div class="w-100 mt-2 mt-md-0">
               <input id="dob" disabled type="date" class="w-100 form-control" />
-              <div class="ps-2 d-none text-danger" id="dobError"></div>
+              <div class="  v-none text-danger error" id="dobError"></div>
             </div>
           </div>
   
-          <div class="d-md-flex justify-content-center mt-3">
+          <div class="d-md-flex justify-content-center mt-4">
             <label class="col-12 col-md-4">Age:</label>
             <div class="w-100 mt-2 mt-md-0">
               <input id="age" disabled="true"  class="w-100 form-control" />
             </div>
           </div>
   
-          <div class="d-md-flex justify-content-center mt-3">
+          <div class="d-md-flex justify-content-center mt-4">
             <label name="address" class="col-12 col-md-4">Address:</label>
             <div class="w-100 mt-2 mt-md-0">
               <textarea id="address" onblur="validateAddress(addressField,addressError)" class="w-100 form-control" ></textarea>
-              <div class="ps-2 d-none text-danger" id="addressError"></div>
+              <div class="  v-none text-danger error pt-1" id="addressError">.</div>
             </div>
           </div>
   
@@ -124,11 +134,11 @@
             <label name="nationality"  class="col-12 col-md-4">Nationality:</label>
             <div class="w-100 mt-2 mt-md-0">
               <select id="nationality" items="${nationalityList}"  class="form-select w-100" >
-                  <option value="Sinhalese">Sinhalese</option>
+                  <option value="Sinhalese" selected>Sinhalese</option>
                   <option value="Sinhalese">Hindu</option>
                   <option value="Sinhalese">Islamic</option>
               </select>
-              <div class="ps-2 d-none text-danger" id="nationalityError"></div>
+              <div class="  d-none text-danger" id="nationalityError"></div>
             </div>
           </div>
   
@@ -137,7 +147,7 @@
             <div class="w-100 mt-2 mt-md-0">
               <input type="radio" id="male" disabled="true" value="Male" name="gender"/> Male
               <input type="radio" id="female" disabled="true" class="ms-5" value="Female" name="gender" /> Female
-              <div class="ps-2 d-none text-danger" id="genderError"></div>
+              <div class="  d-none text-danger" id="genderError"></div>
             </div>
           </div>
         </div>
@@ -182,7 +192,7 @@
       You have updated the NIC Number.<br> Do you really need to continue
       </div>
       <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal">Go Back</button>
+        <button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal" onclick="goBackClickHandler()">Go Back</button>
         <button type="button" class="btn btn-primary rounded-1" onclick="userActionHandler()">Continue</button>
       </div>
     </div>
@@ -217,31 +227,9 @@
 
       let users = [];
 
-    //  const clickHandler = () => {
-      
-    //   spinner.classList.remove('d-none');
-    //   fetch('http://localhost:8080/RestAPI/NICValidator/user/new-user',{
-    //     method:"PUT",
-    //     headers:{
-    //       'Content-type':'application/json'
-    //     },
-    //     body:JSON.stringify(info)
-
-    //   })
-    //   .then((response)=>response.json())
-    //   .then((data)=>{
-    //     spinner.classList.add('d-none');
-    //     openDeleteWarning(JSON.parse(data).message);
-    //   })
-    //   .catch((error)=>{
-    //     console.log(error)
-    //   })
-    // }
-
 
 
     //fetch data from api
-    
     
     const getUsers = async () => {
       
@@ -500,7 +488,11 @@
       
     }
 
-      
+    const goBackClickHandler = () => {
+      warningModal.hide();
+      addUpdateModal.show();
+    }
+            
     </script>
 </body>
 </html>

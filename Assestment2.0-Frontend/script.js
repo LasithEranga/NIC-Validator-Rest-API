@@ -29,18 +29,18 @@ const months = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const showErrors = (inputElement,errorElement,messages) => {
     inputElement.classList.add("is-invalid");
     errorElement.innerText = messages;
-    errorElement.classList.remove("d-none");
+    errorElement.classList.remove("v-none");
 }
 
 const hideErrors = (inputElement,errorElement) => {
     inputElement.classList.add("is-valid");
     inputElement.classList.remove("is-invalid");
-    errorElement.classList.add("d-none");
+    errorElement.classList.add("v-none");
 }
 
 const hideAllStyles = (inputElement,errorElement) => {
   inputElement.classList.remove("is-invalid","is-valid");
-  errorElement.classList.add("d-none");
+  errorElement.classList.add("v-none");
 }
 
 const validateNIC = () => {
@@ -197,7 +197,6 @@ const validateName = (nameField,errorField) => {
 const validateAddress = (addressField,errorField) => {
 
     let address = addressField.value.toString();
-    console.log(addressField.value);
 
     if(address.length === 0){
         //show error
@@ -229,6 +228,7 @@ const clearFields = () => {
   fullNameField.value = "";
   addressField.value = "";
   dobField.value = "";
+  nationalityField.value="Sinhalese"
   maleRadioBtn.checked = false;
   femaleRadioBtn.checked = false;
   ageField.value = "";

@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package lk.kln.mit.restapi.model;
+import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -17,7 +18,7 @@ import lk.kln.mit.restapi.Database.Database;
  * @author Lasith
  */
 public class User {
-       
+
     private String nic;       
     private String oldNic;    
     private String fullName;
@@ -30,6 +31,10 @@ public class User {
     public User(){
         
     };
+    
+    public User(String nic) {
+        this.nic = nic;
+    }
 
     public User(String nic, String fullName, String address, Date dob, String nationality, String gender) {
         this.nic = nic;
@@ -131,42 +136,74 @@ public class User {
         catch(Exception e){
             e.printStackTrace();
             //model.addAttribute("message", "Couldn't receive user details.");
-
         }
-        
-        System.out.println(users);
         return users;
     }
     
-    public static String save(User user){
     
-        String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"')";
-            try(Connection conn = Database.getConnection()){
+    public static User find(String nic){
 
-                Statement statement = conn.createStatement();
-                statement.executeUpdate(query);
-                return "user details saved";
-                
+        User user = null;
+        String query = "SELECT * FROM user WHERE nic = '"+nic+"'";
+        ResultSet resultSet;
+        try{
+            Connection conn = Database.getConnection();
+            Statement statement = conn.createStatement();
+            resultSet = statement.executeQuery(query);
+            while(resultSet.next()){
+               user = new User(
+                    resultSet.getString("nic"),
+                    resultSet.getString("full_name"),
+                    resultSet.getString("address"),
+                    resultSet.getDate("dob"),
+                    resultSet.getString("nationality"),
+                    resultSet.getString("gender")                    
+                    );
             }
-            catch(Exception e){
-                return e.getMessage();
-
-            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            //model.addAttribute("message", "Couldn't receive user details.");
+        }
+        return user;
     }
     
-    public static String update(User user){
-        String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"' WHERE nic='"+user.getOldNic()+"'";
+    
+    public static String save(User user){
+        
+        java.util.Date date = new java.util.Date();
+        java.sql.Date today = new java.sql.Date(date.getTime());
+        String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`,`state`, `action_performed_by`, `record_date`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"', '1','system','"+today+"')";
+        
+        //String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"')";
+        try(Connection conn = Database.getConnection()){
+
+            Statement statement = conn.createStatement();
+            statement.executeUpdate(query);
+            return new Gson().toJson("{\"message\":\"User details saved!\"}");
+
+        }
+        catch(Exception e){
+            return new Gson().toJson("{\"message\":\"Could not save user details\"}");
+        }
+    }
+    
+    public static String update(User user, String oldNic){
+        
+        java.util.Date date = new java.util.Date();
+        java.sql.Date today = new java.sql.Date(date.getTime());
+        String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"',`state`='1', `action_performed_by` = 'system', `record_date`='"+today+"' WHERE nic='"+oldNic+"'";
+           
+        //String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"' WHERE nic='"+user.getOldNic()+"'";
             try(Connection conn = Database.getConnection()){
 
                 Statement statement = conn.createStatement();
                 statement.executeUpdate(query);
-                return "User details updated";
+                return "{\"message\":\"User updated!\"}";
 
             }
             catch(Exception e){
-
-                return e.getMessage();
-
+                return new Gson().toJson("{\"message\":\"Could not update user details\"}");
             }
     }
     
@@ -177,12 +214,13 @@ public class User {
 
             Statement statement = conn.createStatement();
             statement.executeUpdate(query);
-            return "User removed!";
+            return "{\"message\":\"User removed!\"}";
 
         }
         catch(Exception e){
             
-            return e.getMessage();
+            return new Gson().toJson("{\"message\":\""+e.getMessage()+"\"}");
+
 
         }
     }

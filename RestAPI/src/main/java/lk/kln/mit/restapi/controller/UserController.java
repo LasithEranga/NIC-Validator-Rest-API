@@ -10,10 +10,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -41,51 +43,60 @@ public class UserController {
      * @return an instance of java.lang.String
      */
     @GET
-    @Path("all-users")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllUsers(@Context HttpHeaders header) {
-        MultivaluedMap<String, String> headerParams = header.getRequestHeaders();
-        System.out.println(headerParams);
+    public String getAllUsers() {
+
         List<User> users = User.find();
-        
-        return new Gson().toJson(users);
+        if(users.size() > 0){
+            return new Gson().toJson(users);
+
+        }else{
+            return new Gson().toJson("{\"message\":\"No users found\"}");
+        }
         
     }
     
-    @POST
-    @Path("new-user")    
-    @Produces(MediaType.TEXT_PLAIN)
+    @GET
+    @Path("{nic}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllUsers(@PathParam("nic") String nic) {
+        
+        User user = User.find(nic);
+        
+        if(user != null){
+           return new Gson().toJson(user);
+        }else{
+           return new Gson().toJson("{\"message\":\"No user found\"}");
+        }
+        
+    }
+    
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String newUser(@Context HttpHeaders header, User user) {
+    public String newUser(User user) {
         
         return User.save(user);
         
     }
-     
-    @POST
-    @Path("update-user")    
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String updateUser(User user) {
-        return User.update(user);       
-    }
     
     @POST
-    @Path("remove-user")    
+    @Path("{oldNic}")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String removeUser(User user) {
-        
-        return User.remove(user.getNic());
+    public String updateUser(User user,@PathParam("oldNic") String oldNic) {
+       
+        return User.update(user,oldNic);    
         
     }
-
-    /**
-     * PUT method for updating or creating an instance of GenericResource
-     * @param content representation for the resource
-     */
-    @PUT
+    
+    @DELETE
+    @Path("{nic}")    
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public void putJson(String content) {
+    public String removeUser(@PathParam("nic") String nic) {
+        
+        return User.remove(nic);
+        
     }
 }

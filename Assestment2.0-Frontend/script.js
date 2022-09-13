@@ -20,6 +20,7 @@ const nationalityError = document.getElementById("nationalityError");
 const buttonClick = document.getElementById("btnOkay");
 const form = document.getElementById("form");
 
+let seletectedGender;
 const genderError = document.getElementById("genderError");
 
 const nic = nicField.value;
@@ -35,6 +36,11 @@ const hideErrors = (inputElement,errorElement) => {
     inputElement.classList.add("is-valid");
     inputElement.classList.remove("is-invalid");
     errorElement.classList.add("d-none");
+}
+
+const hideAllStyles = (inputElement,errorElement) => {
+  inputElement.classList.remove("is-invalid","is-valid");
+  errorElement.classList.add("d-none");
 }
 
 const validateNIC = () => {
@@ -135,9 +141,12 @@ const generateDobGenderAge = () => {
         //setting gender
         if(gender === "Male"){
             maleRadioBtn.checked = true;
+            seletectedGender = "Male";
         }
         else {
             femaleRadioBtn.checked = true;
+            seletectedGender = "Female";
+
         }
 
         //setting dob
@@ -212,6 +221,19 @@ const validateAddress = (addressField,errorField) => {
     }
 }
 
+const clearFields = () => {
+  hideAllStyles(nicField,nicError)
+  hideAllStyles(fullNameField,fullNameError)
+  hideAllStyles(addressField,addressError)
+  nicField.value = "";
+  fullNameField.value = "";
+  addressField.value = "";
+  dobField.value = "";
+  maleRadioBtn.checked = false;
+  femaleRadioBtn.checked = false;
+  ageField.value = "";
+}
+
 
 buttonClick.addEventListener("click", () => {
     //validate name 
@@ -223,6 +245,6 @@ buttonClick.addEventListener("click", () => {
         dobField.removeAttribute("disabled")
         maleRadioBtn.removeAttribute("disabled")
         femaleRadioBtn.removeAttribute("disabled")
-        form.submit();
+        //form.submit();
     }
 });

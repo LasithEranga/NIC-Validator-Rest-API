@@ -112,7 +112,7 @@ public class User {
     public static List<User> find(){
         List <User> users = new ArrayList();
         User user;
-        String query = "SELECT * FROM user";
+        String query = "SELECT * FROM user WHERE state=1";
         ResultSet resultSet;
         try{
             Connection conn = Database.getConnection();
@@ -144,7 +144,7 @@ public class User {
     public static User find(String nic){
 
         User user = null;
-        String query = "SELECT * FROM user WHERE nic = '"+nic+"'";
+        String query = "SELECT * FROM user WHERE nic = '"+nic+"' AND state=1";
         ResultSet resultSet;
         try{
             Connection conn = Database.getConnection();
@@ -173,7 +173,7 @@ public class User {
         
         java.util.Date date = new java.util.Date();
         java.sql.Date today = new java.sql.Date(date.getTime());
-        String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`,`state`, `action_performed_by`, `record_date`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"', '1','system','"+today+"')";
+        String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`,`state`, `action_performed_by`, `record_date`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"',1,'system','"+today+"')";
         
         //String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"')";
         try(Connection conn = Database.getConnection()){
@@ -192,7 +192,7 @@ public class User {
         
         java.util.Date date = new java.util.Date();
         java.sql.Date today = new java.sql.Date(date.getTime());
-        String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"',`state`='1', `action_performed_by` = 'system', `record_date`='"+today+"' WHERE nic='"+oldNic+"'";
+        String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"',`state`=1, `action_performed_by` = 'system', `record_date`='"+today+"' WHERE nic='"+oldNic+"'";
            
         //String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"' WHERE nic='"+user.getOldNic()+"'";
             try(Connection conn = Database.getConnection()){
@@ -209,7 +209,11 @@ public class User {
     
     public static String remove(String nic){
     
-        String query = "DELETE FROM `user` WHERE nic='"+nic+"'";
+        java.util.Date date = new java.util.Date();
+        java.sql.Date today = new java.sql.Date(date.getTime());
+        //String query = "DELETE FROM `user` WHERE nic='"+nic+"'";
+        String query = "UPDATE `user` SET `state`=0,`action_performed_by`='system', `record_date`='"+today+"'  WHERE nic='"+nic+"'";
+        
         try(Connection conn = Database.getConnection()){
 
             Statement statement = conn.createStatement();

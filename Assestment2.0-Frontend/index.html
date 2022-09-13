@@ -458,7 +458,7 @@
             "gender":seletectedGender
         }
 
-        fetch('http://localhost:8080/RestAPI/NICValidator/user',{
+        fetch(`http://localhost:8080/RestAPI/NICValidator/user/${oldNic}`,{
           method:"POST",
           headers:{
             'Content-type':'application/json'

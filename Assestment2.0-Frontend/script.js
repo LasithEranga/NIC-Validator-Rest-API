@@ -17,7 +17,7 @@ const addressError = document.getElementById("addressError");
 const nationalityField = document.getElementById("nationality");
 const nationalityError = document.getElementById("nationalityError");
 
-const buttonClick = document.getElementById("btnOkay");
+// const buttonClick = document.getElementById("btnOkay");
 const form = document.getElementById("form");
 
 let seletectedGender;
@@ -235,16 +235,16 @@ const clearFields = () => {
 }
 
 
-buttonClick.addEventListener("click", () => {
-    //validate name 
-    let isNameValid = validateName(fullNameField,fullNameError);
-    let isAddressValid = validateAddress(addressField,addressError);
+// buttonClick.addEventListener("click", () => {
+//     //validate name 
+//     let isNameValid = validateName(fullNameField,fullNameError);
+//     let isAddressValid = validateAddress(addressField,addressError);
 
-    if(isNameValid && isAddressValid){
-        //enable the elements before they were submitted otherwise saves as null ;-(
-        dobField.removeAttribute("disabled")
-        maleRadioBtn.removeAttribute("disabled")
-        femaleRadioBtn.removeAttribute("disabled")
-        //form.submit();
-    }
-});
+//     if(isNameValid && isAddressValid){
+//         //enable the elements before they were submitted otherwise saves as null ;-(
+//         // dobField.removeAttribute("disabled")
+//         // maleRadioBtn.removeAttribute("disabled")
+//         // femaleRadioBtn.removeAttribute("disabled")
+//         //form.submit();
+//     }
+// });

@@ -50,7 +50,7 @@
 <body>
   
   <header>
-    <div class="d-flex bg-light py-3 shadow"> 
+    <div class="d-flex bg-light py-3"> 
 
         <div class="col col-lg-6 ps-3 fs-3 fw-bold">
           User Management System
@@ -63,7 +63,7 @@
   <div class="container-fluid p-lg-4">
     <div class="justify-content-start align-items-top p-2 gap-0 " style="background-color:#EBEBEB;height: 80vh;overflow-y: scroll;">
     
-      <div class="fs-2 fw-bold">Users</div>
+      <!-- <div class="fs-2 fw-bold">Users</div> -->
 
       <div class="text-start" id="no-info">
         <span class="text-nowrap">Sorry! No users available to show ... <span> <a href="/add-new" class="d-block d-md-inline ms-md-3 text-start"> Add user</a>
@@ -79,7 +79,7 @@
   <button onclick="addUserClickHandler()" class="btn btn-secondary position-fixed rounded-circle d-flex justify-content-center align-items-center btn border-0" style="bottom: 40px;right: 40px; width: 50px;height: 50px;"><i class="fa-solid fa-user-plus text-light ps-1"></i></div></button>
 
 
-<!--Add/Update Modal dialog  -->
+<!--Add/Update Modal  -->
 <div class="modal fade" id="addUpdateModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered" style="max-height: 80vh;">
     <div class="modal-content rounded-0 border-0 p-2">
@@ -133,10 +133,10 @@
           <div class="d-md-flex justify-content-center mt-3">
             <label name="nationality"  class="col-12 col-md-4">Nationality:</label>
             <div class="w-100 mt-2 mt-md-0">
-              <select id="nationality" items="${nationalityList}"  class="form-select w-100" >
-                  <option value="Sinhalese" selected>Sinhalese</option>
-                  <option value="Sinhalese">Hindu</option>
-                  <option value="Sinhalese">Islamic</option>
+              <select id="nationality"  class="form-select w-100" >
+                  <option value="Sinhalese">Sinhalese</option>
+                  <option value="Hindu">Hindu</option>
+                  <option value="Islamic">Islamic</option>
               </select>
               <div class="  d-none text-danger" id="nationalityError"></div>
             </div>
@@ -220,11 +220,20 @@
     
     <script>
 
-      const haveData = 1;
       const noInfo = document.getElementById("no-info");
       const content = document.getElementById("content");
+      const btnOkay = document.getElementById('btnOkay');
       const toastMessage = document.getElementById('toast');
-
+      const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      const addUpdateModal = new bootstrap.Modal(document.getElementById('addUpdateModal'));
+      const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
+      const btnSave = document.getElementById('btnSave');
+      const toastContent = document.getElementById('toastContent');
+      const formTitle = document.getElementById('title');
+      const newNic = document.getElementById('nic');
+      
+      let oldNic;
+      let formtosubmit;
       let users = [];
 
 
@@ -276,32 +285,38 @@
             <div class="${iconColor} text-light position-absolute rounded-circle d-flex justify-content-center align-items-center " style="top: 15px;right: 15px; width: 35px;height: 35px;">`+iconLetter+`</div>
             <div class="col-12 content-height">
             <div class="d-flex">
-              <div class="col-3">Name</div>
+              <div class="col-3 me-3">Name</div>
               <span>:</span>
               <div class="col-8 ps-2 fixed-lines">`+user.fullName+`</div>
             </div>
             <div class="d-flex">
-              <div class="col-3">Birthday</div>
+              <div class="col-3 me-3">Birthday</div>
               <span>:</span>
               <div class="col-5 ps-2">`+user.dob+`</div>
             </div>
 
             <div class="d-flex">
-              <div class="col-3">NIC</div>
+              <div class="col-3 me-3">NIC</div>
               <span>:</span>
               <div class="col-5 ps-2">`+user.nic+`</div>
             </div>
 
             <div class="d-flex">
-              <div class="col-3">Age</div>
+              <div class="col-3 me-3">Nationality</div>
+              <span>:</span>
+              <div class="col-5 ps-2">`+user.nationality+`</div>
+            </div>
+
+            <div class="d-flex">
+              <div class="col-3 me-3">Age</div>
               <span>:</span>
               <div class="col-5 ps-2">`+age+` yrs</div>
             </div>
 
             <div class="d-flex">
-              <div class="col-3">Address</div>
+              <div class="col-3 me-3">Address</div>
               <span>:</span>
-              <div class="col-9 ps-2 fixed-lines">`+user.address+`</div>
+              <div class="col-8 ps-2 fixed-lines">`+user.address+`</div>
             </div>
 
              <div class="d-flex justify-content-end position-absolute bottom-0 mb-3 end-0 me-3">
@@ -319,12 +334,8 @@
 
 
     getUsers()
-      
 
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    const btnOkay = document.getElementById('btnOkay');
-    let formtosubmit;
-    
+
     //shows delete warning
     const openDeleteWarning = (nicNo) => {
       deleteModal.show();
@@ -352,15 +363,6 @@
       .catch((error)=>{console.log(error)})
     }
 
-
-
-    const addUpdateModal = new bootstrap.Modal(document.getElementById('addUpdateModal'));
-    const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
-    const btnSave = document.getElementById('btnSave');
-    const toastContent = document.getElementById('toastContent');
-    const formTitle = document.getElementById('title');
-    const newNic = document.getElementById('nic');
-    let oldNic;
 
     const addUserClickHandler = () => {
       clearFields();

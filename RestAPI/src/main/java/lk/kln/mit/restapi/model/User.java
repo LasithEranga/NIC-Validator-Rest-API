@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package lk.kln.mit.restapi.model;
+
 import com.google.gson.Gson;
 import java.sql.Connection;
 import java.sql.Date;

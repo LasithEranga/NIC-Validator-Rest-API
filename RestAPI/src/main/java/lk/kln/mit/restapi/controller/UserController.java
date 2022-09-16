@@ -5,6 +5,10 @@
  */
 package lk.kln.mit.restapi.controller;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -29,6 +33,11 @@ import lk.kln.mit.restapi.model.User;
 @Path("user")
 public class UserController {
 
+    private static final String SEARCH_USER = "searchUser";   
+    private static final String INSERT_USER = "insertUser";
+    private static final String UPDATE_USER = "updateUser";
+    private static final String DELETE_USER = "deleteUser";
+    
     @Context
     private UriInfo context;
 
@@ -37,29 +46,66 @@ public class UserController {
      */
     public UserController() {
     }
-
-    /**
-     * Retrieves representation of an instance of lk.kln.mit.restapi.GenericResource
-     * @return an instance of java.lang.String
-     */
-    @GET
+    
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllUsers() {
-
-        List<User> users = User.find();
-        if(users.size() > 0){
-            return new Gson().toJson(users);
-
-        }else{
-            return new Gson().toJson("{\"message\":\"No users found\"}");
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String Router(String request){
+        JsonElement rootElement = JsonParser.parseString(request);
+        JsonObject jsonObject = rootElement.getAsJsonObject();
+        
+        //de-serialization of object
+        JsonElement requestId = jsonObject.get("requestId");        
+        String requestMethod = jsonObject.get("method").toString();
+        
+        requestMethod = requestMethod.replace("\"", "");
+        System.out.println(requestMethod);
+        
+        String string = String.format("Hi I received it\nHere are request details.\nRequest Id:%s\nRequest method:%s",requestId,requestMethod);
+        
+        switch(requestMethod){
+            case "searchUser":
+                string+="\nworking on search user method";
+                break;
+            default:
+               string+="\nMethod not found";
+            
         }
+        return string;
+        
+    }
+
+    
+    
+    public String getAllUser(String request) {
+        
+        String newString = "{'requestId':'54564','requestDate':'2022-12-11','method':'searchUser','user':{'name':'lasith','age':'23'}}";
+        
+        //create a json element and parse the json string to a json element
+        JsonElement jsonElement = JsonParser.parseString(newString);
+        JsonElement element02 = JsonParser.parseString(request);
+        
+        //then convert it to a json object
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+        JsonObject obj2 = element02.getAsJsonObject();
+        
+        
+        String newjson = new Gson().toJson(jsonElement);
+        System.out.println(newjson);
+        return new Gson().toJson(obj2);
+
+//        List<User> users = User.find();
+//        if(users.size() > 0){
+//            return new Gson().toJson(users);
+//
+//        }else{
+//            return new Gson().toJson("{\"message\":\"No users found\"}");
+//        }
         
     }
     
-    @GET
-    @Path("{nic}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getAllUsers(@PathParam("nic") String nic) {
+    
+    public String getAllUsers(String nic) {
         
         User user = User.find(nic);
         
@@ -71,30 +117,26 @@ public class UserController {
         
     }
     
-    @PUT
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+   
     public String newUser(User user) {
-        
-        return User.save(user);
+     
+      return User.save(user);
         
     }
     
-    @POST
-    @Path("{oldNic}")
-    @Produces(MediaType.TEXT_PLAIN)
+    
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String updateUser(User user,@PathParam("oldNic") String oldNic) {
+    public String updateUser(User user, String oldNic) {
        
         return User.update(user,oldNic);    
         
     }
     
-    @DELETE
-    @Path("{nic}")    
+     
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String removeUser(@PathParam("nic") String nic) {
+    public String removeUser(String nic) {
         
         return User.remove(nic);
         

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import lk.kln.mit.restapi.Database.Database;
 
 /**
@@ -22,22 +23,17 @@ import lk.kln.mit.restapi.Database.Database;
  */
 public class User {
 
-    private String nic;       
+    private String nic;  
+    private Date dob;
     private String oldNic;    
     private String fullName;
     private String address;
-    private Date dob;
     private String nationality;
     private String gender;
-    private int age;
     
     public User(){
         
     };
-    
-    public User(String nic) {
-        this.nic = nic;
-    }
 
     public User(String nic, String fullName, String address, Date dob, String nationality, String gender) {
         this.nic = nic;
@@ -48,14 +44,6 @@ public class User {
         this.gender = gender;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-    
     public String getOldNic() {
         return oldNic;
     }
@@ -112,6 +100,9 @@ public class User {
         this.gender = gender;
     }
     
+    
+    
+    
     public static List<User> find(){
         List <User> users = new ArrayList();
         User user;
@@ -132,7 +123,6 @@ public class User {
                     resultSet.getString("gender")                    
                     );
                users.add(user);
-                System.out.println(user);
             }
 
         }
@@ -142,7 +132,6 @@ public class User {
         }
         return users;
     }
-    
     
     public static User find(String nic){
 
@@ -171,42 +160,41 @@ public class User {
         return user;
     }
     
-    public static String save(User user){
+    public static int save(User user){
+        
         boolean isNicDobGenderValid = validateNicDobGender(user.getNic(),user.getDob().toString(),user.getGender());
         boolean isNameValid = validName(user.getFullName());
         boolean isAddressValid = validAddress(user.getAddress());
         java.util.Date date = new java.util.Date();
         java.sql.Date today = new java.sql.Date(date.getTime());
 
-        System.out.println(today);
-        if(isNicDobGenderValid && isNameValid && isAddressValid){
+        if(true){
         
         String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`,`state`, `action_performed_by`, `record_date`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"',1,'system','"+today+"')";
         
-        //String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`) VALUES ('"+user.getNic()+"','"+user.getFullName()+"','"+user.getAddress()+"','"+user.getDob()+"','"+user.getNationality()+"','"+user.getGender()+"')";
         try(Connection conn = Database.getConnection()){
 
             Statement statement = conn.createStatement();
-            statement.executeUpdate(query);
-            return new Gson().toJson("{\"message\":\"User details saved!\"}");
+            return statement.executeUpdate(query);
 
         }
         catch(Exception e){
-            return new Gson().toJson("{\"message\":\"Could not save user details\"}");
+            
+            return 0;
         }
         }else{
-            return new Gson().toJson("{\"message\":\"Validation error\"}");
+            return 4;
         }
     }
     
-    public static String update(User user, String oldNic){
+    public static int update(User user, String oldNic){
         boolean isNicDobGenderValid = validateNicDobGender(user.getNic(),user.getDob().toString(),user.getGender());
         boolean isNameValid = validName(user.getFullName());
         boolean isAddressValid = validAddress(user.getAddress());
         java.util.Date date = new java.util.Date();
         java.sql.Date today = new java.sql.Date(date.getTime());
 
-        if(isNicDobGenderValid && isNameValid && isAddressValid){
+        if(true){
 
         String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"',`state`=1, `action_performed_by` = 'system', `record_date`='"+today+"' WHERE nic='"+oldNic+"'";
            
@@ -214,19 +202,18 @@ public class User {
             try(Connection conn = Database.getConnection()){
 
                 Statement statement = conn.createStatement();
-                statement.executeUpdate(query);
-                return "{\"message\":\"User updated!\"}";
+                return statement.executeUpdate(query);
 
             }
             catch(Exception e){
-                return new Gson().toJson("{\"message\":\"Could not update user details\"}");
+                return 0;
             }
         }else{
-            return new Gson().toJson("{\"message\":\"Validation error\"}");
+            return 4;
         }
     }
     
-    public static String remove(String nic){
+    public static int remove(String nic){
     
         java.util.Date date = new java.util.Date();
         java.sql.Date today = new java.sql.Date(date.getTime());
@@ -236,13 +223,12 @@ public class User {
         try(Connection conn = Database.getConnection()){
 
             Statement statement = conn.createStatement();
-            statement.executeUpdate(query);
-            return "{\"message\":\"User removed!\"}";
+            return statement.executeUpdate(query);
 
         }
         catch(Exception e){
             
-            return new Gson().toJson("{\"message\":\""+e.getMessage()+"\"}");
+            return 0;
 
 
         }
@@ -369,4 +355,8 @@ public class User {
     }
 
 
+    public boolean isFieldsNull(){
+        
+        return false;
+    }
 }

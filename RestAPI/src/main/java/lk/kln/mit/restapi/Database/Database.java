@@ -19,7 +19,7 @@ public class Database {
     private static final String PASSWORD = "";
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException{
-        Class.forName("com.mysql.jdbc.Driver"); 
+        Class.forName("com.mysql.cj.jdbc.Driver"); 
         Connection connection = null;
         
         connection = DriverManager.getConnection(DB_URL,USER_NAME,PASSWORD);

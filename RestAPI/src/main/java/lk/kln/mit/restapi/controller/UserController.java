@@ -34,11 +34,20 @@ import lk.kln.mit.restapi.model.User;
 @Path("user")
 public class UserController {
 
+    //RESPONSE CODES
+    private static final int SUCCESS = 1;
+    private static final int FAILED = 0;
+    private static final int METHOD_NOT_FOUND = 5;
+
+    //REQUEST METHODS
     private static final String All_USERS = "allUsers";
     private static final String SEARCH_USER = "searchUser";
     private static final String INSERT_USER = "insertUser";
     private static final String UPDATE_USER = "updateUser";
     private static final String DELETE_USER = "deleteUser";
+
+    //RESPONSE TEMPLATE
+    private static final String RESPONSE_TEMPLATE = "{'responseCode':%d,'message':%s,'requestId':'%s','users':%s}";
 
     @Context
     private UriInfo context;
@@ -58,109 +67,101 @@ public class UserController {
 
         //de-serialization of object
         String requestId = jsonObject.get("requestId").toString();
+        String userObject = jsonObject.get("user").toString();
+        User user = new Gson().fromJson(userObject, User.class);
         String requestMethod = jsonObject.get("method").toString();
-
         requestMethod = requestMethod.replace("\"", "");
         requestId = requestId.replace("\"", "");
+        String response = "{}";
 
-        String string = String.format("Hi I received it\nHere are the request details.\nRequest Id:%s\nRequest method:%s", requestId, requestMethod);
-        String response = "";
         switch (requestMethod) {
             case All_USERS:
-                string += "\nworking on search user method";
                 List<User> users = User.find();
                 if (users.isEmpty()) {
 
-                    response = String.format("{'responseCode':1,'message':'No users found','requestId':'%s','users':%s}", requestId, "[]");
+                    response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "[]");
 
                 } else {
-                    response = String.format("{'responseCode':1,'message':'Success','requestId':'%s','users':%s}", requestId, new Gson().toJson(users));
+                    response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(users));
                 }
 
                 break;
-            case SEARCH_USER:
-                string += "\nworking on search user method";
 
+            case SEARCH_USER:
+                User foundUser = User.find(user.getNic());
+                if (foundUser == null) {
+                    response = String.format(RESPONSE_TEMPLATE, FAILED, "\"User not found\"", requestId, "[]");
+                } else {
+                    response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(foundUser));
+                }
                 break;
+
             case INSERT_USER:
-                string += "\nworking on insert user method";
+                
+                if (user == null) {
+                    response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Plese send user details\"", requestId, new Gson().toJson(user));
+                            
+                } else {
+                    switch (User.save(user)) {
+                        case 1:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(user));
+                            break;
+                        case 4:
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Validation failed\"", requestId, new Gson().toJson(user));
+                            break;
+                        default:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Could not save the user\"", requestId, new Gson().toJson(user));
+                            break;
+                    }
+                }
                 break;
+
             case UPDATE_USER:
-                string += "\nworking on update user method";
+
+                if (user.getOldNic() != null) {
+                    switch (User.update(user, user.getOldNic())) {
+                        case 1:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(User.find(user.getNic())));
+                            break;
+                        case 4:
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Validation failed\"", requestId, new Gson().toJson(user));
+                            break;
+                        default:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Could not update the user\"", requestId, new Gson().toJson(user));
+                            break;
+                    }
+                } else {
+                    response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Previous NIC not found! Please specify the previous NIC\"", requestId, new Gson().toJson(user));
+                    break;
+                }
                 break;
+
             case DELETE_USER:
-                string += "\nworking on delete user method";
+
+                if (user.getNic() != null) {
+                    switch (User.remove(user.getNic())) {
+                        case 1:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(user));
+                            break;
+                        default:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Could not delete the user\"", requestId, new Gson().toJson(user));
+                            break;
+                    }
+                } else {
+                    response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"NIC not found! Please specify the user NIC\"", requestId, new Gson().toJson(user));
+                    break;
+                }
                 break;
             default:
-                string += "\nMethod not found";
 
         }
 
-        System.out.println(string);
-        
+        System.out.println(response);
+
         JsonElement responseElement = JsonParser.parseString(response);
         JsonObject responseObject = responseElement.getAsJsonObject();
-        return  new Gson().toJson(responseObject);
-         
+        return new Gson().toJson(responseObject);
 
     }
 
-    public String getAllUser(String request) {
-
-        String newString = "{'requestId':'54564','requestDate':'2022-12-11','method':'searchUser','user':{'name':'lasith','age':'23'}}";
-
-        //create a json element and parse the json string to a json element
-        JsonElement jsonElement = JsonParser.parseString(newString);
-        JsonElement element02 = JsonParser.parseString(request);
-
-        //then convert it to a json object
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-        JsonObject obj2 = element02.getAsJsonObject();
-
-        String newjson = new Gson().toJson(jsonElement);
-        System.out.println(newjson);
-        return new Gson().toJson(obj2);
-
-//        List<User> users = User.find();
-//        if(users.size() > 0){
-//            return new Gson().toJson(users);
-//
-//        }else{
-//            return new Gson().toJson("{\"message\":\"No users found\"}");
-//        }
-    }
-
-    public String getAllUsers(String nic) {
-
-        User user = User.find(nic);
-
-        if (user != null) {
-            return new Gson().toJson(user);
-        } else {
-            return new Gson().toJson("{\"message\":\"No user found\"}");
-        }
-
-    }
-
-    public String newUser(User user) {
-
-        return User.save(user);
-
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String updateUser(User user, String oldNic) {
-
-        return User.update(user, oldNic);
-
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String removeUser(String nic) {
-
-        return User.remove(nic);
-
-    }
 }

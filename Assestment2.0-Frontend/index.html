@@ -219,38 +219,52 @@
   <script src="./script.js" ></script>
     
     <script>
-
+      const newNic = document.getElementById('nic');
       const noInfo = document.getElementById("no-info");
+      const formTitle = document.getElementById('title');
       const content = document.getElementById("content");
       const btnOkay = document.getElementById('btnOkay');
+      const btnSave = document.getElementById('btnSave');
       const toastMessage = document.getElementById('toast');
+      const toastContent = document.getElementById('toastContent');
       const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
       const addUpdateModal = new bootstrap.Modal(document.getElementById('addUpdateModal'));
       const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
-      const btnSave = document.getElementById('btnSave');
-      const toastContent = document.getElementById('toastContent');
-      const formTitle = document.getElementById('title');
-      const newNic = document.getElementById('nic');
       
       let oldNic;
+      let userId;
       let formtosubmit;
       let users = [];
+      let requestBody = {
+            "requestId": "454564",
+            "requestDate": new Date().toLocaleString(),
+            "action": "updateUser",
+            "actionPerformedBy": "system",
+            "user": {}
+        }
 
 
 
     //fetch data from api
     
+    
     const getUsers = async () => {
+
+      requestBody.requestId = Math.random()*10000;
+      requestBody.requestDate =  new Date().toLocaleString();
+      requestBody.action = "allUsers";
+      requestBody.actionPerformedBy = "Lasith";
       
       await fetch('http://localhost:8080/RestAPI/NICValidator/user',{
-        method:"GET",
+        method:"POST",
         headers:{
           'Content-type':'application/json'
-        }
+        },
+        body:JSON.stringify(requestBody)
       })
       .then((response)=>response.json())
       .then((data)=>{
-        users = data;
+        users = data.users;
       })
       .catch((error)=>{
         console.log(error)
@@ -320,8 +334,8 @@
             </div>
 
              <div class="d-flex justify-content-end position-absolute bottom-0 mb-3 end-0 me-3">
-              <div><button type="button" class="text-light bg-danger me-2 d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;" onClick="openDeleteWarning('${user.nic}')"><i class="fa-solid fa-user-minus"></i></button></div>
-              <div><button class="text-light bg-success d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;" onclick="updateUserClickHandler('${user.nic}')"><i class="fa-sharp fa-solid fa-user-pen"></i></button></div>
+              <div><button type="button" class="text-light bg-danger me-2 d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;" onClick="openDeleteWarning('${user.id}')"><i class="fa-solid fa-user-minus"></i></button></div>
+              <div><button class="text-light bg-success d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;" onclick="updateUserClickHandler('${user.id}')"><i class="fa-sharp fa-solid fa-user-pen"></i></button></div>
             </div>
           </div>
           </div>
@@ -337,24 +351,31 @@
 
 
     //shows delete warning
-    const openDeleteWarning = (nicNo) => {
+    const openDeleteWarning = (id) => {
       deleteModal.show();
-      btnOkay.setAttribute('onClick',`modalOkayButtonClickHandler('${nicNo}')`)
+      btnOkay.setAttribute('onClick',`modalOkayButtonClickHandler('${id}')`)
     }
 
 
     //removes the details on user confirmation
-    const modalOkayButtonClickHandler = (nicNo) => {
+    const modalOkayButtonClickHandler = (id) => {
+      
+      requestBody.requestId = Math.random()*10000;
+      requestBody.requestDate =  new Date().toLocaleString();
+      requestBody.action = "deleteUser";
+      requestBody.actionPerformedBy = "system";
+      requestBody.user = { "id": id }
+
       deleteModal.hide()
-      fetch(`http://localhost:8080/RestAPI/NICValidator/user/${nicNo}`,{
-        method:"DELETE",
+      fetch(`http://localhost:8080/RestAPI/NICValidator/user`,{
+        method:"POST",
         headers:{
           'Content-type':'application/json'
-        }      
+        },
+        body:JSON.stringify(requestBody)      
       })
-      .then(response => response.text())
+      .then(response => response.json())
       .then((result) => {
-        result = JSON.parse(result)
         toastContent.innerHTML = result.message
         new bootstrap.Toast(toastMessage).show();
         getUsers()
@@ -374,20 +395,32 @@
 
 
     //retrive user data from db and fill update form
-    const updateUserClickHandler = (nic) => {
+    const updateUserClickHandler = (id) => {
+
+      requestBody.requestId = Math.random()*10000;
+      requestBody.requestDate =  new Date().toLocaleString();
+      requestBody.action = "searchUser";
+      requestBody.actionPerformedBy = "system";
+      requestBody.user = { "id": id }
+
       clearFields();
-      oldNic = nic;
+      userId = id;
+
       btnSave.setAttribute('onclick',"updateUserDetails()");
       formTitle.innerText = "Update User";
-      fetch(`http://localhost:8080/RestAPI/NICValidator/user/${nic}`,{
-        method:"GET",
+
+      fetch(`http://localhost:8080/RestAPI/NICValidator/user`,{
+        method:"POST",
         headers:{
           'Content-type':'application/json'
-        }
+        },
+        body:JSON.stringify(requestBody)
       })
       .then(response => response.json())
-      .then((user) => {
-        clearFields()
+      .then((data) => {
+        let user = data.users;
+        clearFields();
+        oldNic = user.nic;
         nicField.value = user.nic;
         fullNameField.value = user.fullName;
         addressField.value = user.address;
@@ -403,30 +436,38 @@
 
     //save new user details to the database
     const saveUserDetails = () => {
-      let isNameValid = validateName(fullNameField,fullNameError);
+        
+        let isNameValid = validateName(fullNameField,fullNameError);
         let isAddressValid = validateAddress(addressField,addressError);
         let [year, month, date, gender,isNicvalid] = validateNIC();
 
+        
+
         if(isNameValid && isAddressValid && isNicvalid){
-            const user = {
-                "nic":nicField.value,       
-                "fullName":fullNameField.value,
-                "address":addressField.value,
-                "dob":dobField.value,
-                "nationality":nationalityField.value,
-                "gender":seletectedGender
-            }
+            
+          requestBody.requestId = Math.random()*10000;
+          requestBody.requestDate =  new Date().toLocaleString();
+          requestBody.action = "insertUser";
+          requestBody.actionPerformedBy = "Lasith";
+          requestBody.user = { 
+                                "nic":nicField.value,       
+                                "fullName":fullNameField.value,
+                                "address":addressField.value,
+                                "dob":dobField.value,
+                                "nationality":nationalityField.value,
+                                "gender":seletectedGender,
+                                "created_by":"system"
+                              }
 
             fetch('http://localhost:8080/RestAPI/NICValidator/user',{
-              method:"PUT",
+              method:"POST",
               headers:{
                 'Content-type':'application/json'
               },
-              body:JSON.stringify(user)
+              body:JSON.stringify(requestBody)
             })
             .then(response => response.json())
             .then((result) => {
-              result = JSON.parse(result)
               toastContent.innerHTML = result.message
               new bootstrap.Toast(toastMessage).show();
               addUpdateModal.hide()
@@ -439,21 +480,27 @@
     //update user details in the database
     const updateDetails = () => {
 
-        const user = {
-            "nic":nicField.value,       
-            "fullName":fullNameField.value,
-            "address":addressField.value,
-            "dob":dobField.value,
-            "nationality":nationalityField.value,
-            "gender":seletectedGender
-        }
+        requestBody.requestId = Math.random()*10000;
+        requestBody.requestDate =  new Date().toLocaleString();
+        requestBody.action = "updateUser";
+        requestBody.actionPerformedBy = "Lasith";
+        requestBody.user = {
+                              "id": userId,
+                              "nic": nicField.value,
+                              "fullName": fullNameField.value,
+                              "nationality": nationalityField.value,
+                              "gender": seletectedGender,
+                              "dob": dobField.value,
+                              "address": addressField.value,
+                              "modified_by": "lasith"
+                            }
 
-        fetch(`http://localhost:8080/RestAPI/NICValidator/user/${oldNic}`,{
+        fetch(`http://localhost:8080/RestAPI/NICValidator/user`,{
           method:"POST",
           headers:{
             'Content-type':'application/json'
           },
-          body:JSON.stringify(user)
+          body:JSON.stringify(requestBody)
         })
         .then(response => response.text())
         .then((result) => {

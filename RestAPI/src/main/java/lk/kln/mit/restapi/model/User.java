@@ -5,19 +5,14 @@
  */
 package lk.kln.mit.restapi.model;
 
-import com.google.gson.Gson;
-import com.sun.tools.javac.util.ArrayUtils;
-import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import lk.kln.mit.restapi.Database.Database;
 
 /**
@@ -26,36 +21,58 @@ import lk.kln.mit.restapi.Database.Database;
  */
 public class User {
 
+    private int id = -1;
     private String nic;
-    private Date dob;
-    private String oldNic;
     private String fullName;
     private String address;
+    private String dob;
     private String nationality;
     private String gender;
+    private String state = null;
+    private String created_by = null;
+    private String created_on = null;
+    private String created_at = null;
+    private String modified_by = null;
+    private String modified_on = null;
+    private String modified_at = null;
+    private String future_column_1 = null;
+    private String future_column_2 = null;
+    private String future_column_3 = null;
 
     public User() {
 
     }
 
-    ;
-
-    public User(String nic, String fullName, String address, Date dob, String nationality, String gender) {
+    public User(int id, String nic, String fullName, String address, String dob, String nationality, String gender,
+            String state, String created_by, String created_on, String created_at, String modified_by,
+            String modified_on,
+            String modified_at, String future_column_1, String future_column_2, String future_column_3) {
+        this.id = id;
         this.nic = nic;
         this.fullName = fullName;
         this.address = address;
         this.dob = dob;
         this.nationality = nationality;
         this.gender = gender;
+        this.state = null;
+        this.created_by = null;
+        this.created_on = null;
+        this.created_at = null;
+        this.modified_by = null;
+        this.modified_on = null;
+        this.modified_at = null;
+        this.future_column_1 = null;
+        this.future_column_2 = null;
+        this.future_column_3 = null;
     }
 
-    public String getOldNic() {
-        return oldNic;
-    }
-
-    public void setOldNic(String oldNic) {
-        this.oldNic = oldNic;
-    }
+    private static final String FIND_ALL = "SELECT * FROM user WHERE state=1";
+    private static final String FIND_ONE = "SELECT * FROM user WHERE id = ? AND state=1";
+    // private static final String FILTERED_RESULT = "SELECT * FROM user WHERE
+    // state=1";
+    private static final String CREATE_USER = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`, `state`, `created_by`, `created_on`, `created_at`) VALUES (?,?,?,?,?,?,1,?,CAST(now() as Date),CAST(now() as Time))";
+    private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
+    private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 WHERE id = ?";
 
     public String getNic() {
         return nic;
@@ -81,11 +98,11 @@ public class User {
         this.address = address;
     }
 
-    public Date getDob() {
+    public String getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(String dob) {
         this.dob = dob;
     }
 
@@ -108,48 +125,70 @@ public class User {
     public static List<User> find() {
         List<User> users = new ArrayList();
         User user;
-        String query = "SELECT * FROM user WHERE state=1";
+
         ResultSet resultSet;
         try {
             Connection conn = Database.getConnection();
-            Statement statement = conn.createStatement();
-            resultSet = statement.executeQuery(query);
+            PreparedStatement statement = conn.prepareStatement(FIND_ALL);
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 user = new User(
+                        resultSet.getInt("id"),
                         resultSet.getString("nic"),
                         resultSet.getString("full_name"),
                         resultSet.getString("address"),
-                        resultSet.getDate("dob"),
+                        resultSet.getString("dob"),
                         resultSet.getString("nationality"),
-                        resultSet.getString("gender")
+                        resultSet.getString("gender"),
+                        resultSet.getString("state"),
+                        resultSet.getString("created_by"),
+                        resultSet.getString("created_on"),
+                        resultSet.getString("created_at"),
+                        resultSet.getString("modified_by"),
+                        resultSet.getString("modified_on"),
+                        resultSet.getString("modified_at"),
+                        resultSet.getString("future_column_1"),
+                        resultSet.getString("future_column_2"),
+                        resultSet.getString("future_column_3")
                 );
                 users.add(user);
             }
 
         } catch (Exception e) {
-           
+
         }
         return users;
     }
 
-    public static User find(String nic) {
+    public User getUser() {
 
         User user = null;
-        String query = "SELECT * FROM user WHERE nic = '" + nic + "' AND state=1";
         ResultSet resultSet;
+
         try {
             Connection conn = Database.getConnection();
-            Statement statement = conn.createStatement();
-            resultSet = statement.executeQuery(query);
+            PreparedStatement statement = conn.prepareStatement(FIND_ONE);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 user = new User(
+                        resultSet.getInt("id"),
                         resultSet.getString("nic"),
                         resultSet.getString("full_name"),
                         resultSet.getString("address"),
-                        resultSet.getDate("dob"),
+                        resultSet.getString("dob"),
                         resultSet.getString("nationality"),
-                        resultSet.getString("gender")
-                );
+                        resultSet.getString("gender"),
+                        resultSet.getString("state"),
+                        resultSet.getString("created_by"),
+                        resultSet.getString("created_on"),
+                        resultSet.getString("created_at"),
+                        resultSet.getString("modified_by"),
+                        resultSet.getString("modified_on"),
+                        resultSet.getString("modified_at"),
+                        resultSet.getString("future_column_1"),
+                        resultSet.getString("future_column_2"),
+                        resultSet.getString("future_column_3"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -159,47 +198,62 @@ public class User {
 
     public int save() {
 
-//        boolean isNicDobGenderValid = validateNicDobGender(user.getNic(), user.getDob().toString(), user.getGender());
-//        boolean isNameValid = validName(user.getFullName());
-//        boolean isAddressValid = validAddress(user.getAddress());
-        java.util.Date date = new java.util.Date();
-        java.sql.Date today = new java.sql.Date(date.getTime());
-
-        if (nic == null || fullName == null || nationality == null || gender == null) {
+        // boolean isNicDobGenderValid = validateNicDobGender(user.getNic(),
+        // user.getDob().toString(), user.getGender());
+        // boolean isNameValid = validName(user.getFullName());
+        // boolean isAddressValid = validAddress(user.getAddress());
+        if (nic == null || fullName == null || nationality == null || gender == null || dob == null
+                || address == null || created_by == null) {
             return 2;
         }
+        System.out.println(dob);
 
-        String query = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`,`state`, `action_performed_by`, `record_date`) VALUES ('" + nic + "','" + fullName + "','" + address + "','" + dob + "','" + nationality + "','" + gender + "',1,'system','" + today + "')";
         try (Connection conn = Database.getConnection()) {
-            Statement statement = conn.createStatement();
-            statement.executeUpdate(query);
+            PreparedStatement statement = conn.prepareStatement(CREATE_USER);
+            statement.setString(1, nic);
+            statement.setString(2, fullName);
+            statement.setString(3, address);
+            statement.setString(4, dob);
+            statement.setString(5, nationality);
+            statement.setString(6, gender);
+            statement.setString(7, created_by);
+            statement.executeUpdate();
             return 1;
 
         } catch (SQLIntegrityConstraintViolationException e) {
             return 4;
         } catch (Exception e) {
+
             return 0;
         }
 
     }
 
     public int update() {
-//        boolean isNicDobGenderValid = validateNicDobGender(user.getNic(), user.getDob().toString(), user.getGender());
-//        boolean isNameValid = validName(user.getFullName());
-//        boolean isAddressValid = validAddress(user.getAddress());
-        java.util.Date date = new java.util.Date();
-        java.sql.Date today = new java.sql.Date(date.getTime());
+        // boolean isNicDobGenderValid = validateNicDobGender(user.getNic(),
+        // user.getDob().toString(), user.getGender());
+        // boolean isNameValid = validName(user.getFullName());
+        // boolean isAddressValid = validAddress(user.getAddress());
 
-        if (nic == null || fullName == null || nationality == null || gender == null || gender == null || dob == null) {
+        if ( id == -1 || nic == null || fullName == null || nationality == null || gender == null || dob == null || address == null || modified_by == null) {
             return 2;
         }
-        String query = "UPDATE `user` SET `nic`='" + nic + "',`full_name`='" + fullName + "',`address`='" + address + "',`dob`='" + dob + "',`nationality`='" + nationality + "',`gender`='" + gender + "',`state`=1, `action_performed_by` = 'system', `record_date`='" + today + "' WHERE nic='" + oldNic + "'";
-
-        //String query = "UPDATE `user` SET `nic`='"+user.getNic()+"',`full_name`='"+user.getFullName()+"',`address`='"+user.getAddress()+"',`dob`='"+user.getDob()+"',`nationality`='"+user.getNationality()+"',`gender`='"+user.getGender()+"' WHERE nic='"+user.getOldNic()+"'";
+        
         try (Connection conn = Database.getConnection()) {
 
-            Statement statement = conn.createStatement();
-            return statement.executeUpdate(query);
+            PreparedStatement statement = conn.prepareStatement(UPDATE_USER);
+            statement.setString(1, nic);
+            statement.setString(2, fullName);
+            statement.setString(3, address);
+            statement.setString(4, dob);
+            statement.setString(5, nationality);
+            statement.setString(6, gender);
+            statement.setString(7, modified_by);            
+            statement.setInt(8, id);
+            
+            statement.executeUpdate();
+            
+            return 1;
 
         } catch (SQLIntegrityConstraintViolationException e) {
             return 4;
@@ -211,19 +265,16 @@ public class User {
 
     public int remove() {
 
-        java.util.Date date = new java.util.Date();
-        java.sql.Date today = new java.sql.Date(date.getTime());
-        //String query = "DELETE FROM `user` WHERE nic='"+nic+"'";
-
-        if (nic == null) {
+        if (id == -1) {
             return 2;
         }
-        String query = "UPDATE `user` SET `state`=0,`action_performed_by`='system', `record_date`='" + today + "'  WHERE nic='" + nic + "'";
-
+        
         try (Connection conn = Database.getConnection()) {
 
-            Statement statement = conn.createStatement();
-            return statement.executeUpdate(query);
+            PreparedStatement statement = conn.prepareStatement(DELETE_USER);
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            return 1;
 
         } catch (Exception e) {
 
@@ -317,7 +368,7 @@ public class User {
                 }
                 String dateStr = Integer.toString(date);
                 String generatedDob = yearStr + "-" + monthStr + "-" + dateStr;
-                //compare submitted values and return
+                // compare submitted values and return
                 if (submittedDob.equals(generatedDob) && submittedGender.equals(gender)) {
                     return true;
                 } else {

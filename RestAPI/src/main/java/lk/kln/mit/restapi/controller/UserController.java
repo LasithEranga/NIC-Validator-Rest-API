@@ -6,24 +6,18 @@
 package lk.kln.mit.restapi.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import lk.kln.mit.restapi.model.User;
 
 /**
@@ -64,105 +58,125 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public String Router(String request) {
-        JsonElement rootElement = JsonParser.parseString(request);
-        JsonObject jsonObject = rootElement.getAsJsonObject();
 
-        //de-serialization of object
-        String requestId = jsonObject.get("requestId").toString();
-        String userObject = jsonObject.get("user").toString();
+        try {
 
-        User user = new Gson().fromJson(userObject, User.class);
+            String requestId;
+            String response;
 
-        String action = jsonObject.get("action").toString();
-        action = action.replace("\"", "");
-        requestId = requestId.replace("\"", "");
-        String response = "{}";
+            JsonElement rootElement = JsonParser.parseString(request);
+            JsonObject jsonObject = rootElement.getAsJsonObject();
 
-        switch (action) {
-            case ALL_USERS:
+            //de-serialization of object
+            requestId = jsonObject.get("requestId").toString();
+            String userObject = jsonObject.get("user").toString();
 
-                List<User> users = User.find();
-                if (users.isEmpty()) {
+            User user = new Gson().fromJson(userObject, User.class);
 
-                    response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "[]");
+            String action = jsonObject.get("action").toString();
+            action = action.replace("\"", "");
+            requestId = requestId.replace("\"", "");
 
-                } else {
-                    response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(users));
-                }
-                break;
+            switch (action) {
+                case ALL_USERS:
 
-            case SEARCH_USER:
+                    List<User> users = User.find();
+                    if (users.isEmpty()) {
 
-                User foundUser = User.find(user.getNic());
-                if (foundUser == null) {
-                    response = String.format(RESPONSE_TEMPLATE, FAILED, "\"User not found\"", requestId, "[]");
-                } else {
-                    response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(foundUser));
-                }
-                break;
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "[]");
 
-            case INSERT_USER:
+                    } else {
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(users));
+                    }
+                    break;
 
-                switch (user.save()) {
-                    case 1:
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(User.find(user.getNic())));
-                        break;
-                    case 2:
-                        response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please send all parameters\"", requestId, "[]");
-                        break;
-                    case 4:
-                        response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "[]");
-                        break;
-                    default:
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not save the user\"", requestId, "[]");
-                        break;
-                }
+                case SEARCH_USER:
 
-                break;
+                    User foundUser = user.getUser();
+                    if (foundUser == null) {
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"User not found\"", requestId, "[]");
+                    } else {
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(foundUser));
+                    }
+                    break;
 
-            case UPDATE_USER:
+                case INSERT_USER:
 
-                switch (user.update()) {
-                    case 1:
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(User.find(user.getNic())));
-                        break;
-                    case 2:
-                        response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please send all parameters\"", requestId, "[]");
-                        break;
-                    case 4:
-                        response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "[]");
-                        break;
-                    default:
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not update the user\"", requestId, "[]");
-                        break;
-                }
-                break;
+                    switch (user.save()) {
+                        case 1:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details saved.\"", requestId, new Gson().toJson(user.getUser()));
+                            break;
+                        case 2:
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please send all parameters\"", requestId, "[]");
+                            break;
+                        case 4:
+                            response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "[]");
+                            break;
+                        default:
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not save user details\"", requestId, "[]");
+                            break;
+                    }
 
-            case DELETE_USER:
+                    break;
 
-                switch (user.remove()) {
-                    case 1:
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(user));
-                        break;
-                    case 2:
-                        response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Nic number not found! Please specify the user NIC\"", requestId, "[]");
-                        break;
-                    default:
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not delete the user\"", requestId, "[]");
-                        break;
-                }
+                case UPDATE_USER:
 
-                break;
+                    switch (user.update()) {
+                        case 1:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details updated\"", requestId, new Gson().toJson(user.getUser()));
+                            break;
+                        case 2:
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please inclue all required parameters\"", requestId, "[]");
+                            break;
+                        case 4:
+                            response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "[]");
+                            break;
+                        default:
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not update the user\"", requestId, "[]");
+                            break;
+                    }
+                    
+                    break;
 
-            default:
+                case DELETE_USER:
 
-                response = String.format(RESPONSE_TEMPLATE, METHOD_NOT_FOUND, "\"Invalid operation\"", requestId, "[]");
-
+                    switch (user.remove()) {
+                        case 1:
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details removed\"", requestId, new Gson().toJson(user));
+                            break;
+                        case 2:
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters, please include the unique id of the user\"", requestId, "[]");
+                            break;
+                        default:
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not delete the user\"", requestId, "[]");
+                            break;
+                    }
+                    
+                    break;
+                    
+                default:
+                    
+                    response = String.format(RESPONSE_TEMPLATE, METHOD_NOT_FOUND, "\"Invalid operation\"", requestId, "[]");
+            
+            }
+            
+            JsonElement responseElement = JsonParser.parseString(response);
+            JsonObject responseObject = responseElement.getAsJsonObject();
+            return new Gson().toJson(responseObject);
+            
+        } catch (JsonSyntaxException e) {
+            //if json parsing failed
+            JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Malformed JSON object\"", "Failed to retrive", "[]"));
+            JsonObject responseObject = responseElement.getAsJsonObject();
+            return new Gson().toJson(responseObject);
+        
+        } catch (Exception e) {
+            
+            JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, FAILED, "\"An error occured from server side\"", "Failed to retrive", "[]"));
+            JsonObject responseObject = responseElement.getAsJsonObject();
+            return new Gson().toJson(responseObject);
+        
         }
-
-        JsonElement responseElement = JsonParser.parseString(response);
-        JsonObject responseObject = responseElement.getAsJsonObject();
-        return new Gson().toJson(responseObject);
 
     }
 

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amaranth&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/4f128951c5.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .w-4 {
+        width: 4rem;
+      }
+      .border-isselected {
+        position: relative;
+        color: white;
+      }
+      .border-isnotselected {
+        border-left: 5px;
+        line-height: 10px;
+      }
+
+      .border-isselected:after {
+        content: "";
+        background: rgb(253, 252, 252);
+        position: absolute;
+        top: 30%;
+        left: 0;
+        height: 40%;
+        width: 3px;
+      }
+      .amarnath {
+        font-family: "Amaranth", sans-serif;
+      }
+      .small-card {
+        height: 10rem;
+      }
+      .extra-small-card {
+        height: 9.5rem;
+      }
+      .chart {
+        height: 20rem;
+      }
+      .fs-20 {
+        font-size: 4rem;
+        line-height: 5rem;
+      }
+      .green-badge {
+        background-color: #e1f7d9;
+        color: #80da7d;
+        padding: 5px;
+        padding-right: 13px;
+      }
+      .red-badge {
+        background-color: #ffdadf;
+        color: #c14455;
+        padding: 5px;
+        padding-right: 13px;
+      }
+    </style>
+  </head>
+
+  <!-- 
+        bg-dark
+        bg-primary
+        bg-danger
+        bg-warning
+        bg-secondary
+
+        p-1
+        p-2
+        p-3
+        p-4
+        p-4
+
+        pt-1
+        pt-2
+        pt-3
+        pt-4
+        pt-5
+
+        pe-1
+        pe-2
+        pe-3
+        pe-4
+        pe-5
+
+        ps-1
+        ps-2
+        ps-3
+        ps-4
+        ps-5
+
+        pb-1
+        pb-2
+        pb-3
+        pb-4
+        pb-5
+
+        m-0
+        m-1
+        m-2
+        m-3
+        m-4
+        m-5
+
+        mt-1
+        mt-2
+        mt-3
+        mt-4
+        mt-5
+
+        me-1
+        me-2
+        me-3
+        me-4
+        me-5
+
+        mb-1
+        mb-2
+        mb-3
+        mb-4
+        mb-5
+
+        ms-1
+        ms-2
+        ms-3
+        ms-4
+        ms-5
+
+
+        justify-content-center
+        align-items-center
+
+        d-flex
+
+        col
+        col-1
+        col-2
+        col-3
+        col-4
+        col-5
+        col-6
+        col-7
+        col-8
+        col-9
+        col-10
+        col-11
+        col-12
+
+        text-light
+        text-dark
+        text-danger
+        text-warning
+        text-primary
+        text-secondary
+
+
+        shadow
+
+        text-center
+        text-start
+        text-end
+
+        
+
+     -->
+
+  <body class="d-flex">
+    <div class="bg-primary vh-100 w-4">
+      <div class="column">
+        <div class="py-4 d-flex justify-content-center fw-bold text-light">
+          UMS
+        </div>
+        <div class="py-4 d-flex"></div>
+        <div class="py-4 d-flex justify-content-center border-isselected">
+          <i class="fa-sharp fa-solid fa-home fs-5"></i>
+        </div>
+        <div class="py-4 d-flex justify-content-center border-isnotselected">
+          <i class="fa-sharp fa-solid fa-users fs-5"></i>
+        </div>
+        <div class="py-4 d-flex justify-content-center border-isnotselected">
+          <i class="fa-sharp fa-solid fa-file-invoice fs-3"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-light w-100 d-flex">
+      <div class="col-9">
+        <div class="pt-3 ps-4 fs-2 fw-semibold amarnath">
+          Hi User, Welcome back !
+        </div>
+
+        <!-- small cards -->
+        <div class="col-12 d-flex ps-3 pt-3">
+          <div class="col-3 p-2">
+            <div class="small-card bg-white shadow-sm rounded-4 ps-4 pt-3">
+              <div class=" "><i class="fa-solid fa-address-card fs-1"></i></div>
+
+              <div class="pt-2 amarnath fs-4">55 Users</div>
+
+              <div class="col-10 text-secondary amarnath">
+                New user registrations in last week
+              </div>
+            </div>
+          </div>
+
+          <div class="col-3 p-2">
+            <div class="small-card bg-white shadow-sm rounded-4 ps-4 pt-3">
+              <div class=" "><i class="fa-solid fa-address-card fs-1"></i></div>
+
+              <div class="pt-2 amarnath fs-4">55 Users</div>
+
+              <div class="col-10 text-secondary amarnath">
+                New user registrations in last week
+              </div>
+            </div>
+          </div>
+
+          <div class="col-3 p-2">
+            <div class="small-card bg-white shadow-sm rounded-4 ps-4 pt-3">
+              <div class=" "><i class="fa-solid fa-address-card fs-1"></i></div>
+
+              <div class="pt-2 amarnath fs-4">55 Users</div>
+
+              <div class="col-10 text-secondary amarnath">
+                New user registrations in last week
+              </div>
+            </div>
+          </div>
+
+          <div class="col-3 p-2">
+            <div class="small-card bg-white shadow-sm rounded-4 ps-4 pt-3">
+              <div class=" "><i class="fa-solid fa-address-card fs-1"></i></div>
+
+              <div class="pt-2 amarnath fs-4">55 Users</div>
+
+              <div class="col-10 text-secondary amarnath">
+                New user registrations in last week
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- small cards - end -->
+
+        <div class="d-flex">
+          <div class="col-4">
+            <div class="pt-3 p-2 px-4">
+              <div class="bg-white shadow-sm rounded-4 extra-small-card">
+                <div class="amarnath ps-3 pt-1 fs-4">New Users</div>
+                <div class="d-flex">
+                  <div class="amarnath ps-5 fs-20 pt-1">54</div>
+                  <div class="d-flex align-items-end pb-2">
+                    <span class="ms-4 fs-5 rounded-2 green-badge">
+                      +18.7%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-2 px-4">
+              <div class="bg-white shadow-sm rounded-4 extra-small-card">
+                <div class="amarnath ps-3 pt-1 fs-4">New Users</div>
+                <div class="d-flex">
+                  <div class="amarnath ps-5 fs-20 pt-1">54</div>
+                  <div class="d-flex align-items-end pb-2">
+                    <span class="ms-4 fs-5 rounded-2 red-badge"> +18.7% </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 col-8 pe-2">
+            <div class="bg-white shadow-sm chart w-100 rounded-2 p-2">
+              <canvas id="myChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-3 d-flex p-3">
+        <div class="rounded-5 w-100" style="background-color: #f2f2fd">
+          <div>top bar</div>
+          <div class="py-5"><canvas id="nationaltyChart"></canvas></div>
+          <div class="py-5">male / female chart</div>
+          <div>Recent activities</div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      const labels = ["January", "February", "March", "April", "May", "June"];
+
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: "My First dataset",
+            backgroundColor: "rgb(255, 99, 132)",
+            borderColor: "rgb(255, 99, 132)",
+            data: [0, 10, 5, 2, 20, 30, 45],
+          },
+        ],
+      };
+
+      const config = {
+        type: "line",
+        data: data,
+        options: {},
+      };
+
+      const DATA_COUNT = 5;
+      const NUMBER_CFG = { count: DATA_COUNT, min: 0, max: 100 };
+
+      const datas = {
+        labels: ["Sinhalease", "Hindu", "Islamic"],
+        datasets: [
+        {
+            label: "My First dataset",
+            backgroundColor: ["red",'Orange','Yellow'],
+            borderColor: "rgb(255, 99, 132,0)",
+            data: [20, 10, 5],
+          },
+        ],
+      };
+
+      const config2 = {
+        type: "pie",
+        data: datas,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "right",
+            },
+            title: {
+              display: true,
+              text: "Nationalty",
+            },
+          },
+        },
+      };
+
+      const ctx = document.getElementById("myChart").getContext("2d");
+      const nationaltyChartCanvas = document.getElementById("nationaltyChart").getContext("2d");
+      const myChart = new Chart(ctx, config);
+      const nationaltyChart = new Chart(nationaltyChartCanvas, config2);
+
+      const inputs = {
+        min: -100,
+        max: 100,
+        count: 8,
+        decimals: 2,
+        continuity: 1,
+      };
+
+      const generateLabels = () => {
+        return Utils.months({ count: inputs.count });
+      };
+
+      const generateData = () => Utils.numbers(inputs);
+    </script>
+  </body>
+</html>

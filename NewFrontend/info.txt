@@ -1,0 +1,8 @@
+group by age and show chart - could be ranged
+
+pie chart on gender 
+
+pie chart on nationalty
+
+detail card on new users
+

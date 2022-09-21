@@ -65,16 +65,19 @@
         line-height: 5rem;
       }
       .green-badge {
-        background-color: #e1f7d9;
-        color: #80da7d;
+        background-color: #dbffce;;
+        color: #2cff00;
         padding: 5px;
         padding-right: 13px;
       }
       .red-badge {
         background-color: #ffdadf;
-        color: #c14455;
+        color: #ec364e;
         padding: 5px;
         padding-right: 13px;
+      }
+      .recent-activity-icon{
+        background-color: #e3e5f7;
       }
     </style>
   </head>
@@ -293,7 +296,7 @@
 
           <div class="pt-3 col-8 pe-2">
             <div class="bg-white shadow-sm chart w-100 rounded-2 p-2">
-              <canvas id="myChart"></canvas>
+              <canvas id="myChart" class="col-12" height="300"></canvas>
             </div>
           </div>
         </div>
@@ -301,10 +304,84 @@
 
       <div class="col-3 d-flex p-3">
         <div class="rounded-5 w-100" style="background-color: #f2f2fd">
-          <div>top bar</div>
-          <div class="py-5"><canvas id="nationaltyChart"></canvas></div>
-          <div class="py-5">male / female chart</div>
-          <div>Recent activities</div>
+          <div class=" pt-3 pe-3 d-flex justify-content-end">
+            <div class="mx-2">
+              <i class="fa-regular fa-bell  fs-5 "></i>
+            </div>
+            <div class="mx-3">
+              <i class="fa-regular fa-comment fs-5 "></i>
+            </div>
+            <div class="mx-2">
+              <img src="./Lasith.png" class=" rounded-circle mb-1" width="25px" height="25px">
+            </div>
+          </div>
+
+          <div class=" p-3 pb-0 pt-0">
+            <span class=" amarnath">Nationalty</span>
+            <canvas id="nationaltyChart" class="col-10" height="150"></canvas>
+          </div>
+
+          <div class=" p-3 pe-4 me-3 pb-0 pt-0">
+            <span class=" amarnath">Gender</span>
+            <canvas id="genderChart" class="col-10" height="150"></canvas>
+          </div>
+
+          <div class=" ps-3 pt-1">
+            <span class=" amarnath">Recent activities</span>
+            
+            
+            <div class=" d-flex col-11 my-2">
+              <div class="">
+                <div class=" p-2 recent-activity-icon rounded-4 d-flex justify-content-center align-items-center">
+                  <i class="fa-solid fa-address-card fs-4 p-1"></i>
+                </div>
+              </div>
+              <div class=" ps-3 ">
+                <div class=" amarnath ">
+                  User details updated
+                </div>
+                <div class=" text-secondary fs-6 ">
+                  3min ago
+                </div>
+              </div>
+            </div>
+
+            <div class=" d-flex col-11 my-2">
+              <div class="">
+                <div class=" p-2 recent-activity-icon rounded-4 d-flex justify-content-center align-items-center">
+                  <i class="fa-solid fa-address-card fs-4 p-1"></i>
+                </div>
+              </div>
+              <div class=" ps-3 ">
+                <div class=" amarnath ">
+                  User details updated
+                </div>
+                <div class=" text-secondary fs-6 ">
+                  3min ago
+                </div>
+              </div>
+            </div>
+
+            <div class=" d-flex col-11 my-2">
+              <div class="">
+                <div class=" p-2 recent-activity-icon rounded-4 d-flex justify-content-center align-items-center">
+                  <i class="fa-solid fa-address-card fs-4 p-1"></i>
+                </div>
+              </div>
+              <div class=" ps-3 ">
+                <div class=" amarnath ">
+                  User details removed
+                </div>
+                <div class=" text-secondary fs-6 ">
+                  3min ago
+                </div>
+              </div>
+            </div>
+
+
+
+
+          </div>
         </div>
       </div>
     </div>
@@ -316,30 +393,40 @@
     ></script>
 
     <script>
-      const labels = ["January", "February", "March", "April", "May", "June"];
+      const labels = ["18-30", "30-40", "40-50", "50-60", "60-70", "70-80"];
 
       const data = {
         labels: labels,
         datasets: [
           {
-            label: "My First dataset",
-            backgroundColor: "rgb(255, 99, 132)",
+            label: "# of Users by age",
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 206, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)',
+                'rgba(153, 102, 255, 0.5)',
+                'rgba(255, 159, 64, 0.5)'
+            ],
             borderColor: "rgb(255, 99, 132)",
-            data: [0, 10, 5, 2, 20, 30, 45],
+            data: [40, 10, 5, 2, 20, 30, 45],
           },
         ],
       };
 
       const config = {
-        type: "line",
+        type: "bar",
         data: data,
-        options: {},
+        options: {
+          responsive: false,
+        },
       };
 
-      const DATA_COUNT = 5;
-      const NUMBER_CFG = { count: DATA_COUNT, min: 0, max: 100 };
-
-      const datas = {
+    
+      const ctx = document.getElementById("myChart").getContext("2d");
+      const myChart = new Chart(ctx, config);
+      
+      const nationaltyData = {
         labels: ["Sinhalease", "Hindu", "Islamic"],
         datasets: [
         {
@@ -351,41 +438,69 @@
         ],
       };
 
-      const config2 = {
+      const nationaltyChartConfig = {
         type: "pie",
-        data: datas,
+        data: nationaltyData,
         options: {
-          responsive: true,
+          responsive: false,
           plugins: {
             legend: {
               position: "right",
+              labels:{
+                padding:15,
+                usePointStyle:true,
+                pointStyle:'circle',
+              }
             },
             title: {
-              display: true,
+              display: false,
               text: "Nationalty",
             },
           },
         },
       };
-
-      const ctx = document.getElementById("myChart").getContext("2d");
       const nationaltyChartCanvas = document.getElementById("nationaltyChart").getContext("2d");
-      const myChart = new Chart(ctx, config);
-      const nationaltyChart = new Chart(nationaltyChartCanvas, config2);
+      const nationaltyChart = new Chart(nationaltyChartCanvas, nationaltyChartConfig);
 
-      const inputs = {
-        min: -100,
-        max: 100,
-        count: 8,
-        decimals: 2,
-        continuity: 1,
+
+
+      const genderData = {
+        labels: ["Male", "Female"],
+        datasets: [
+        {
+            label: "Gender",
+            backgroundColor: ["red",'Orange'],
+            borderColor: "rgb(255, 99, 132,0)",
+            data: [20, 10, 5],
+          },
+        ],
       };
 
-      const generateLabels = () => {
-        return Utils.months({ count: inputs.count });
+      const genderChartConfig = {
+        type: "pie",
+        data: genderData,
+        options: {
+          responsive: false,
+          plugins: {
+            legend: {
+              position: "right",
+              labels:{
+                padding:15,
+                usePointStyle:true,
+                pointStyle:'circle'
+                
+              }
+            },
+            title: {
+              display: false,
+              text: "Gender",
+            },
+          },
+        },
       };
+      const genderChartCanvas = document.getElementById("genderChart").getContext("2d");
+      const genderChart = new Chart(genderChartCanvas, genderChartConfig);
 
-      const generateData = () => Utils.numbers(inputs);
     </script>
   </body>
 </html>

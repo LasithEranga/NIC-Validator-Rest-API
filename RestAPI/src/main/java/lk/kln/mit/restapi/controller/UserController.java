@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -41,6 +42,10 @@ public class UserController {
     private static final String INSERT_USER = "insertUser";
     private static final String UPDATE_USER = "updateUser";
     private static final String DELETE_USER = "deleteUser";
+    private static final String COUNT_USERS = "getCount";
+    private static final String COUNT_USERS_FILTERED = "filteredResult";
+    private static final String COUNT_ACTIVITIES = "getActivities";
+    private static final String COUNT_NATIONALTY = "getCountByNationalty";
 
     //RESPONSE TEMPLATE
     private static final String RESPONSE_TEMPLATE = "{'responseCode':%d,'message':%s,'requestId':'%s','users':%s}";
@@ -63,6 +68,9 @@ public class UserController {
 
             String requestId;
             String response;
+            String range;
+            int days;
+            int noOfFilteredUsers;
 
             JsonElement rootElement = JsonParser.parseString(request);
             JsonObject jsonObject = rootElement.getAsJsonObject();
@@ -97,6 +105,65 @@ public class UserController {
                         response = String.format(RESPONSE_TEMPLATE, FAILED, "\"User not found\"", requestId, "[]");
                     } else {
                         response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(foundUser));
+                    }
+                    break;
+
+                case COUNT_USERS:
+
+                    int noOfUsers = User.getNoOfUsers();
+                    if (noOfUsers == 0) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "0");
+
+                    } else {
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfUsers));
+                    }
+                    break;
+
+                case COUNT_USERS_FILTERED:
+
+                    range = jsonObject.get("range").toString();
+                    range = range.replace("\"", "");
+                    days = Integer.parseInt(range);
+                    noOfFilteredUsers = User.getUserRegistrationCount(days);
+                    if (noOfFilteredUsers == -1) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "0");
+
+                    } else {
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfFilteredUsers));
+                    }
+                    break;
+                    
+                 case COUNT_ACTIVITIES:
+
+                    range = jsonObject.get("range").toString();
+                    range = range.replace("\"", "");
+                    days = Integer.parseInt(range);
+                    String activity = jsonObject.get("filterByActivity").toString();
+                    activity = activity.replace("\"", "");
+                    noOfFilteredUsers = User.getActivityCount(days,activity);
+                    if (noOfFilteredUsers == -1) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No result found\"", requestId, "0");
+
+                    } else {
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfFilteredUsers));
+                    }
+                    break;
+                    
+                case COUNT_NATIONALTY:
+
+                    Map<String, Integer> nationaltyMap = User.getNationaltyCount();
+                    if (nationaltyMap.isEmpty()) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No data found\"", requestId, "[]");
+
+                    } else {
+                        JsonElement nationaltyElemenet = JsonParser.parseString(nationaltyMap.toString());
+                        JsonObject nationaltyObject = nationaltyElemenet.getAsJsonObject();
+                        
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(nationaltyObject));
                     }
                     break;
 
@@ -135,7 +202,7 @@ public class UserController {
                             response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not update the user\"", requestId, "[]");
                             break;
                     }
-                    
+
                     break;
 
                 case DELETE_USER:
@@ -151,31 +218,31 @@ public class UserController {
                             response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not delete the user\"", requestId, "[]");
                             break;
                     }
-                    
+
                     break;
-                    
+
                 default:
-                    
+
                     response = String.format(RESPONSE_TEMPLATE, METHOD_NOT_FOUND, "\"Invalid operation\"", requestId, "[]");
-            
+
             }
-            
+
             JsonElement responseElement = JsonParser.parseString(response);
             JsonObject responseObject = responseElement.getAsJsonObject();
             return new Gson().toJson(responseObject);
-            
+
         } catch (JsonSyntaxException e) {
             //if json parsing failed
             JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Malformed JSON object\"", "Failed to retrive", "[]"));
             JsonObject responseObject = responseElement.getAsJsonObject();
             return new Gson().toJson(responseObject);
-        
+
         } catch (Exception e) {
-            
+
             JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, FAILED, "\"An error occured from server side\"", "Failed to retrive", "[]"));
             JsonObject responseObject = responseElement.getAsJsonObject();
             return new Gson().toJson(responseObject);
-        
+
         }
 
     }

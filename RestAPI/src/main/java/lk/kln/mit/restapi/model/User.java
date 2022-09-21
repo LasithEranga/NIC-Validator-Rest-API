@@ -10,7 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lk.kln.mit.restapi.Database.Database;
@@ -39,6 +41,17 @@ public class User {
     private String future_column_2 = null;
     private String future_column_3 = null;
 
+    private static final String FIND_ALL = "SELECT * FROM user WHERE state=1";
+    private static final String GET_COUNT = "SELECT COUNT(*) as count FROM user WHERE state=1";
+    private static final String FIND_ONE = "SELECT * FROM user WHERE id = ? AND state=1";
+    private static final String USER_REGISTRATION_COUNT = "SELECT COUNT(*) as count FROM user WHERE state=1 AND created_on >= DATE_SUB(CURDATE(), INTERVAL ? DAY); ";
+    private static final String FILTERED_RESULT = "SELECT * FROM user WHERE state=1";
+    private static final String GET_ACTIVITIES = "SELECT COUNT(*) as count FROM user WHERE state= ? AND modified_on >= DATE_SUB(CURDATE(), INTERVAL ? DAY); ";
+    private static final String GET_NATIONALTY_COUNT = "SELECT DISTINCT nationality as nationalty, COUNT(*) as count FROM user WHERE state = 1 GROUP BY nationality; ";
+    private static final String CREATE_USER = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`, `state`, `created_by`, `created_on`, `created_at`) VALUES (?,?,?,?,?,?,1,?,CAST(now() as Date),CAST(now() as Time))";
+    private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
+    private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 , `modified_on`= CAST(now() as Date) , `modified_at`= CAST(now() as Time) WHERE id = ?";
+
     public User() {
 
     }
@@ -65,14 +78,6 @@ public class User {
         this.future_column_2 = null;
         this.future_column_3 = null;
     }
-
-    private static final String FIND_ALL = "SELECT * FROM user WHERE state=1";
-    private static final String FIND_ONE = "SELECT * FROM user WHERE id = ? AND state=1";
-    // private static final String FILTERED_RESULT = "SELECT * FROM user WHERE
-    // state=1";
-    private static final String CREATE_USER = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`, `state`, `created_by`, `created_on`, `created_at`) VALUES (?,?,?,?,?,?,1,?,CAST(now() as Date),CAST(now() as Time))";
-    private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
-    private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 WHERE id = ?";
 
     public String getNic() {
         return nic;
@@ -120,6 +125,92 @@ public class User {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public static int getNoOfUsers() {
+
+        ResultSet resultSet;
+        try (Connection conn = Database.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(GET_COUNT);
+
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("count");
+            } else {
+                return 0;
+            }
+
+        } catch (Exception e) {
+
+            return 0;
+        }
+
+    }
+
+    public static int getUserRegistrationCount(int noOfDays) {
+
+        ResultSet resultSet;
+        try (Connection conn = Database.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(USER_REGISTRATION_COUNT);
+            statement.setInt(1, noOfDays);
+            System.out.println(statement);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("count");
+            } else {
+                return -1;
+            }
+
+        } catch (Exception e) {
+
+            return -1;
+        }
+
+    }
+
+    public static int getActivityCount(int noOfDays, String activity) {
+
+        ResultSet resultSet;
+        try (Connection conn = Database.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(GET_ACTIVITIES);
+
+            if (activity.equals("delete")) {
+                statement.setInt(1, 0);
+            } else if (activity.equals("update")) {
+                statement.setInt(1, 1);
+            }
+
+            statement.setInt(2, noOfDays);
+            System.out.println(statement);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("count");
+            } else {
+                return -1;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+
+    }
+
+    public static Map<String,Integer> getNationaltyCount() {
+        
+        Map<String,Integer> map = new HashMap<>();
+        
+        ResultSet resultSet;
+        try (Connection conn = Database.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(GET_NATIONALTY_COUNT);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                map.put(resultSet.getString("nationalty"), resultSet.getInt("count"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
     public static List<User> find() {
@@ -235,10 +326,10 @@ public class User {
         // boolean isNameValid = validName(user.getFullName());
         // boolean isAddressValid = validAddress(user.getAddress());
 
-        if ( id == -1 || nic == null || fullName == null || nationality == null || gender == null || dob == null || address == null || modified_by == null) {
+        if (id == -1 || nic == null || fullName == null || nationality == null || gender == null || dob == null || address == null || modified_by == null) {
             return 2;
         }
-        
+
         try (Connection conn = Database.getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(UPDATE_USER);
@@ -248,11 +339,11 @@ public class User {
             statement.setString(4, dob);
             statement.setString(5, nationality);
             statement.setString(6, gender);
-            statement.setString(7, modified_by);            
+            statement.setString(7, modified_by);
             statement.setInt(8, id);
-            
+
             statement.executeUpdate();
-            
+
             return 1;
 
         } catch (SQLIntegrityConstraintViolationException e) {
@@ -268,7 +359,7 @@ public class User {
         if (id == -1) {
             return 2;
         }
-        
+
         try (Connection conn = Database.getConnection()) {
 
             PreparedStatement statement = conn.prepareStatement(DELETE_USER);

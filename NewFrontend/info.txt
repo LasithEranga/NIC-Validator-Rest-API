@@ -1,8 +1,17 @@
-group by age and show chart - could be ranged
+group by age and show chart - could be ranged done
 
-pie chart on gender 
+pie chart on gender  done
 
-pie chart on nationalty
+pie chart on nationalty done
 
-detail card on new users
+detail card on new users done
+
+
+cards? ??????????????
+new users since last week
+total registrations
+
+
+user activities  account deletions, account updates
+
 

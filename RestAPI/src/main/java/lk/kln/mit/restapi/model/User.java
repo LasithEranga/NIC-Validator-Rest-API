@@ -51,6 +51,7 @@ public class User {
     private static final String CREATE_USER = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`, `state`, `created_by`, `created_on`, `created_at`) VALUES (?,?,?,?,?,?,1,?,CAST(now() as Date),CAST(now() as Time))";
     private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 , `modified_on`= CAST(now() as Date) , `modified_at`= CAST(now() as Time) WHERE id = ?";
+    private static final String RECENT_ACTIVITIES = "SELECT * FROM `user` WHERE (`created_on` > Now() - INTERVAL 1 Day AND `created_at` > Now() - INTERVAL 1 Hour) OR (`modified_on`> Now() - INTERVAL 1 Day AND `modified_at` > Now() - INTERVAL 1 Hour) ORDER BY COALESCE(`modified_at`, `created_at`) DESC LIMIT 3;";
 
     public User() {
 
@@ -67,13 +68,13 @@ public class User {
         this.dob = dob;
         this.nationality = nationality;
         this.gender = gender;
-        this.state = null;
-        this.created_by = null;
-        this.created_on = null;
-        this.created_at = null;
-        this.modified_by = null;
-        this.modified_on = null;
-        this.modified_at = null;
+        this.state = state;
+        this.created_by = created_by;
+        this.created_on = created_on;
+        this.created_at = created_at;
+        this.modified_by = modified_by;
+        this.modified_on = modified_on;
+        this.modified_at = modified_at;
         this.future_column_1 = null;
         this.future_column_2 = null;
         this.future_column_3 = null;
@@ -196,21 +197,44 @@ public class User {
 
     }
 
-    public static Map<String,Integer> getNationaltyCount() {
-        
-        Map<String,Integer> map = new HashMap<>();
-        
+    public static List<User> getRecentActivities() {
+
         ResultSet resultSet;
-        try (Connection conn = Database.getConnection()) {
-            PreparedStatement statement = conn.prepareStatement(GET_NATIONALTY_COUNT);
+        List<User> users = new ArrayList();
+        User user;
+
+        try {
+            Connection conn = Database.getConnection();
+            PreparedStatement statement = conn.prepareStatement(RECENT_ACTIVITIES);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                map.put(resultSet.getString("nationalty"), resultSet.getInt("count"));
+                System.out.println(resultSet.getString("full_name"));
+                user = new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("nic"),
+                        resultSet.getString("full_name"),
+                        resultSet.getString("address"),
+                        resultSet.getString("dob"),
+                        resultSet.getString("nationality"),
+                        resultSet.getString("gender"),
+                        resultSet.getString("state"),
+                        resultSet.getString("created_by"),
+                        resultSet.getString("created_on"),
+                        resultSet.getString("created_at"),
+                        resultSet.getString("modified_by"),
+                        resultSet.getString("modified_on"),
+                        resultSet.getString("modified_at"),
+                        resultSet.getString("future_column_1"),
+                        resultSet.getString("future_column_2"),
+                        resultSet.getString("future_column_3")
+                );
+                users.add(user);
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
-        return map;
+        return users;
     }
 
     public static List<User> find() {

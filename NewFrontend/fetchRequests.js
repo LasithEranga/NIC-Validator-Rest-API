@@ -146,9 +146,9 @@ const setAgeGroupGraph = () => {
 
   allUsers.map((user) => {
     let currentYear = new Date().getFullYear();
-    let age = currentYear - user.dob.getFullYear();
+    let age = currentYear - new Date(user.dob).getFullYear();
 
-    if (age > 70 && age < 80) {
+    if (age > 70) {
       age70To80++;
     } else if (age > 60) {
       age60To70++;
@@ -164,4 +164,51 @@ const setAgeGroupGraph = () => {
   });
 
   return [age18To30, age30To40, age40To50, age50To60, age60To70, age70To80];
+};
+
+const setRecentActivities = (element) => {
+
+  requestBody.requestId = Math.random() * 10000;
+  requestBody.requestDate = new Date().toLocaleString();
+  requestBody.action = "getRecentActivities";
+  requestBody.actionPerformedBy = "Lasith";
+
+  let template = "";
+
+  fetch("http://localhost:8080/RestAPI/NICValidator/user", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.responseCode === 1) {
+        let timeNow = new Date().toLocaleTimeString().slice(2, 4);
+        let activities = data.users;
+
+        activities.map((user) => {
+          console.log(user);
+          template += `
+                <div class="d-flex col-11 my-2">
+                <div class="">
+                    <div class="p-2 recent-activity-icon rounded-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-address-card fs-4 p-1"></i>
+                    </div>
+                </div>
+                <div class="ps-3">
+                    <div class="amarnath">${user.modified_at ? "User details updated" : "User details created"}</div>
+                    <div class="text-secondary fs-6">${ user.modified_at ? timeNow - user.modified_at.slice(3, 5) + " min ago": timeNow - user.created_at.slice(3, 5)  + " min ago"
+                    }</div>
+                </div>
+                </div>`;
+        });
+
+        element.innerHTML = template;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };

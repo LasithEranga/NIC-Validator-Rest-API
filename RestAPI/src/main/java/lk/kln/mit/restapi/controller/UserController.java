@@ -45,7 +45,7 @@ public class UserController {
     private static final String COUNT_USERS = "getCount";
     private static final String COUNT_USERS_FILTERED = "filteredResult";
     private static final String COUNT_ACTIVITIES = "getActivities";
-    private static final String COUNT_NATIONALTY = "getCountByNationalty";
+    private static final String GET_RECENT_ACTIVITIES = "getRecentActivities";
 
     //RESPONSE TEMPLATE
     private static final String RESPONSE_TEMPLATE = "{'responseCode':%d,'message':%s,'requestId':'%s','users':%s}";
@@ -152,18 +152,15 @@ public class UserController {
                     }
                     break;
                     
-                case COUNT_NATIONALTY:
+                case GET_RECENT_ACTIVITIES:
 
-                    Map<String, Integer> nationaltyMap = User.getNationaltyCount();
-                    if (nationaltyMap.isEmpty()) {
+                    List<User> usersActivity = User.getRecentActivities();
+                    if (usersActivity.isEmpty()) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No data found\"", requestId, "[]");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "[]");
 
                     } else {
-                        JsonElement nationaltyElemenet = JsonParser.parseString(nationaltyMap.toString());
-                        JsonObject nationaltyObject = nationaltyElemenet.getAsJsonObject();
-                        
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(nationaltyObject));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(usersActivity));
                     }
                     break;
 

@@ -53,14 +53,30 @@
         font-family: "Amaranth", sans-serif;
       }
       .bg-table{
-        background-color: rgb(236, 236, 236);
+        background-color: rgb(202, 202, 202);
       }
       .tb-body > div:nth-child(odd){
         background-color: rgb(255, 255, 255);
       }
       .tb-body > div:nth-child(even){
-        background-color: rgb(133, 77, 77);
+        background-color: rgb(218, 218, 218);
       }
+      .fixed-lines{
+      overflow: hidden;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .v-none{
+      visibility: hidden;
+    }
+    .v-unset{
+      visibility: unset;
+    }
+    .error{
+      font-size: 0.7rem;
+      line-height: 0.6rem;
+    }
      
 
     </style>
@@ -87,18 +103,19 @@
 
     <div class="bg-light w-100 d-flex">
       <div class="col-12">
-        <div class="pt-3 ps-4 fs-2 fw-semibold amarnath">
-          Manage User Details
+        <div class="pt-3 ps-4 fs-2 fw-semibold amarnath d-flex justify-content-between pe-5">
+           Manage User Details
+           <span class="text-primary" role="button" onclick="addUserClickHandler()"> New User</span>
         </div>
 
         <div class=" ps-4 mt-3">
             
-            <div class=" d-flex py-3 bg-table rounded-2 ps-3 me-5 amarnath">
+            <div class=" d-flex py-3 bg-table rounded-0 ps-3 me-5 amarnath">
                 <div class="col-2 ">
                     NIC Number
                 </div>
                 <div class="col-2 ">
-                    Full Name
+                    Name
                 </div>
                 <div class="col-2 ">
                     Address
@@ -118,62 +135,7 @@
 
             </div>
             <div class="tb-body me-5 " id="content">
-
-                <div class=" d-flex py-2 my-1 bg-table rounded-2 ps-3 amarnath">
-                    <div class="col-2 ">
-                        NIC Number
-                    </div>
-                    <div class="col-2 ">
-                        Full Name
-                    </div>
-                    <div class="col-2 ">
-                        Address
-                    </div>
-                    <div class="col-1  ">
-                        Birthday
-                    </div>
-                    <div class="col-2 ">
-                        Nationality
-                    </div>
-                    <div class="col-1 ">
-                        Gender
-                    </div>
-                    <div class="col ps-5">
-                        edit/delete
-                    </div>
-    
-                </div>
-
-                <div class=" d-flex py-2 my-1 bg-table rounded-2 ps-3 amarnath">
-                    <div class="col-2 ">
-                        NIC Number
-                    </div>
-                    <div class="col-2 ">
-                        Full Name
-                    </div>
-                    <div class="col-2 ">
-                        Address
-                    </div>
-                    <div class="col-1  ">
-                        Birthday
-                    </div>
-                    <div class="col-2 ">
-                        Nationality
-                    </div>
-                    <div class="col-1 ">
-                        Gender
-                    </div>
-                    <div class="col ps-5">
-                        edit/delete
-                    </div>
-    
-                </div>
-
-
             </div>
-          
-
-
         </div>
 
 
@@ -200,7 +162,7 @@
               <label name="fullName"  class="col-12 col-md-4">Full Name:</label>
               <div class="w-100 mt-2 mt-md-0">
                 <input id="fullName" onblur="validateName(fullNameField,fullNameError)"  class="w-100 form-control" />
-                <div class="  v-none text-danger error pt-1" id="fullNameError">.</div>
+                <div class="v-none text-danger error pt-1" id="fullNameError">.</div>
               </div>
             </div>
             
@@ -216,7 +178,7 @@
               <label name="dob"  class="col-12 col-md-4">Date of birth:</label>
               <div class="w-100 mt-2 mt-md-0">
                 <input id="dob" disabled type="date" class="w-100 form-control" />
-                <div class="  v-none text-danger error" id="dobError"></div>
+                <div class="  v-none text-danger error" id="dobError">.</div>
               </div>
             </div>
     
@@ -319,9 +281,6 @@
   </div>
 
 
-
-    <button onclick="addUserClickHandler()" class="btn btn-secondary position-fixed rounded-circle d-flex justify-content-center align-items-center btn border-0" style="bottom: 40px;right: 40px; width: 50px;height: 50px;"><i class="fa-solid fa-user-plus text-light ps-1"></i></div></button>
-
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
@@ -360,7 +319,6 @@
 
     //fetch data from api
     
-    
     const getUsers = async () => {
 
       requestBody.requestId = Math.random()*10000;
@@ -378,35 +336,53 @@
       .then((response)=>response.json())
       .then((data)=>{
         users = data.users;
+        setTableRows(1,7);
+
       })
       .catch((error)=>{
         console.log(error)
-      })
-
-
-      //display no info dialog if no users are available in database.
-      if(users.length === 0){
-        content.style.display = "none";
-        noInfo.style.display = "unset";
-      }
-      else{
-        noInfo.style.display = "none";
-        content.style.display = "unset";
-        let contentHtml = "";
-        users.forEach(user => {
-          let dob = new Date(user.dob).getFullYear();
-          let currentYear = new Date().getFullYear();
-          let age = currentYear - dob;
-          
-          contentHtml +=  TableRow(user.nic, user.fullName, user.address, user.dob, user.nationalty, user.gender, editBtn, deleteBtn )
-        });
-        content.innerHTML = contentHtml;
-      }
+      })      
     }
 
 
-    //getUsers()
+    getUsers()
 
+
+    const setTableRows = (start,end) => {
+     
+      requestBody.requestId = (Math.random()*10000).toFixed(0);
+      requestBody.requestDate =  new Date().toLocaleString();
+      requestBody.action = "getSetOfUsers";
+      requestBody.actionPerformedBy = "Lasith";
+      requestBody.start = start;
+      requestBody.end = end;
+      
+      fetch('http://localhost:8080/RestAPI/NICValidator/user',{
+        method:"POST",
+        headers:{
+          'Content-type':'application/json'
+        },
+        body:JSON.stringify(requestBody)
+      })
+      .then((response)=>response.json())
+      .then((data)=>{
+        let usersSet = data.users;
+        let contentHtml = "";
+        usersSet.forEach(user => {
+          contentHtml +=  TableRow(user)
+        });
+        content.innerHTML = contentHtml;
+        
+      })
+      .catch((error)=>{
+        console.log(error)
+      })  
+        
+    }
+
+    const setPagination = () => {
+
+    }
 
     //shows delete warning
     const openDeleteWarning = (id) => {

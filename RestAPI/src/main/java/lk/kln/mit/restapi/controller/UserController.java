@@ -39,6 +39,7 @@ public class UserController {
     //REQUEST METHODS
     private static final String ALL_USERS = "allUsers";
     private static final String SEARCH_USER = "searchUser";
+    private static final String GET_SETOF_USERS = "getSetOfUsers";
     private static final String INSERT_USER = "insertUser";
     private static final String UPDATE_USER = "updateUser";
     private static final String DELETE_USER = "deleteUser";
@@ -120,6 +121,21 @@ public class UserController {
                     }
                     break;
 
+                case GET_SETOF_USERS:
+                    String start = jsonObject.get("start").toString();
+                    String end = jsonObject.get("end").toString();
+                    start = start.replace("\"", "");
+                    end = end.replace("\"", "");
+                    List<User> usersSet = User.getSetOfUsers(Integer.parseInt(start), Integer.parseInt(end));
+                    if (usersSet.isEmpty()) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "0");
+
+                    } else {
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(usersSet));
+                    }
+                    break;
+
                 case COUNT_USERS_FILTERED:
 
                     range = jsonObject.get("range").toString();
@@ -134,15 +150,15 @@ public class UserController {
                         response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfFilteredUsers));
                     }
                     break;
-                    
-                 case COUNT_ACTIVITIES:
+
+                case COUNT_ACTIVITIES:
 
                     range = jsonObject.get("range").toString();
                     range = range.replace("\"", "");
                     days = Integer.parseInt(range);
                     String activity = jsonObject.get("filterByActivity").toString();
                     activity = activity.replace("\"", "");
-                    noOfFilteredUsers = User.getActivityCount(days,activity);
+                    noOfFilteredUsers = User.getActivityCount(days, activity);
                     if (noOfFilteredUsers == -1) {
 
                         response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No result found\"", requestId, "0");
@@ -151,7 +167,7 @@ public class UserController {
                         response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfFilteredUsers));
                     }
                     break;
-                    
+
                 case GET_RECENT_ACTIVITIES:
 
                     List<User> usersActivity = User.getRecentActivities();

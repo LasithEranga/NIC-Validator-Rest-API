@@ -52,6 +52,7 @@ public class User {
     private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 , `modified_on`= CAST(now() as Date) , `modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String RECENT_ACTIVITIES = "SELECT * FROM `user` WHERE (`created_on` > Now() - INTERVAL 1 Day AND `created_at` > Now() - INTERVAL 1 Hour) OR (`modified_on`> Now() - INTERVAL 1 Day AND `modified_at` > Now() - INTERVAL 1 Hour) ORDER BY COALESCE(`modified_at`, `created_at`) DESC LIMIT 3;";
+    private static final String SET_OF_USERS = "SELECT * FROM `user` LIMIT ? , ? ; ";
 
     public User() {
 
@@ -195,6 +196,45 @@ public class User {
             return -1;
         }
 
+    }
+
+    public static List<User> getSetOfUsers(int start, int end) {
+
+        List<User> users = new ArrayList();
+        User user;
+        ResultSet resultSet;
+        try (Connection conn = Database.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(SET_OF_USERS);
+            statement.setInt(1, start);            
+            statement.setInt(2, end);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                user = new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("nic"),
+                        resultSet.getString("full_name"),
+                        resultSet.getString("address"),
+                        resultSet.getString("dob"),
+                        resultSet.getString("nationality"),
+                        resultSet.getString("gender"),
+                        resultSet.getString("state"),
+                        resultSet.getString("created_by"),
+                        resultSet.getString("created_on"),
+                        resultSet.getString("created_at"),
+                        resultSet.getString("modified_by"),
+                        resultSet.getString("modified_on"),
+                        resultSet.getString("modified_at"),
+                        resultSet.getString("future_column_1"),
+                        resultSet.getString("future_column_2"),
+                        resultSet.getString("future_column_3")
+                );
+                users.add(user);
+            }
+
+        } catch (Exception e) {
+
+        }
+        return users;
     }
 
     public static List<User> getRecentActivities() {

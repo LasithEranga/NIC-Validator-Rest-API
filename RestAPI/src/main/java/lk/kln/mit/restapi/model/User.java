@@ -46,13 +46,13 @@ public class User {
     private static final String FIND_ONE = "SELECT * FROM user WHERE id = ? AND state=1";
     private static final String USER_REGISTRATION_COUNT = "SELECT COUNT(*) as count FROM user WHERE state=1 AND created_on >= DATE_SUB(CURDATE(), INTERVAL ? DAY); ";
     private static final String FILTERED_RESULT = "SELECT * FROM user WHERE state=1";
-    private static final String GET_ACTIVITIES = "SELECT COUNT(*) as count FROM user WHERE state= ? AND modified_on >= DATE_SUB(CURDATE(), INTERVAL ? DAY); ";
+    private static final String GET_ACTIVITIES = "SELECT COUNT(*) as count FROM user WHERE state= ? AND modified_on >= (Now() - INTERVAL ? DAY); ";
     private static final String GET_NATIONALTY_COUNT = "SELECT DISTINCT nationality as nationalty, COUNT(*) as count FROM user WHERE state = 1 GROUP BY nationality; ";
     private static final String CREATE_USER = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`, `state`, `created_by`, `created_on`, `created_at`) VALUES (?,?,?,?,?,?,1,?,CAST(now() as Date),CAST(now() as Time))";
     private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 , `modified_on`= CAST(now() as Date) , `modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String RECENT_ACTIVITIES = "SELECT * FROM `user` WHERE (`created_on` > Now() - INTERVAL 1 Day AND `created_at` > Now() - INTERVAL 1 Hour) OR (`modified_on`> Now() - INTERVAL 1 Day AND `modified_at` > Now() - INTERVAL 1 Hour) ORDER BY COALESCE(`modified_at`, `created_at`) DESC LIMIT 3;";
-    private static final String SET_OF_USERS = "SELECT * FROM `user` LIMIT ? , ? ; ";
+    private static final String SET_OF_USERS = "SELECT * FROM `user` WHERE state=1 LIMIT ? , ? ; ";
 
     public User() {
 

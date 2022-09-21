@@ -6,7 +6,7 @@ const TableRow = (
         <div class="col-2 ">
             ${user.nic}
         </div>
-        <div class="col-2 fixed-lines ">
+        <div class="col-2 fixed-lines pe-1">
             ${user.fullName}
         </div>
         <div class="col-2  fixed-lines">
@@ -22,8 +22,9 @@ const TableRow = (
             ${user.gender}
         </div>
         <div class="col ps-5 d-flex">
-        <div><button class="text-success d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;" onclick="updateUserClickHandler('${user.id}')"><i class="fa-sharp fa-solid fa-user-pen"></i></button></div>
-        <div><button type="button" class="text-danger me-2 d-flex justify-content-center align-items-center btn rounded-0" style="width:35px;height: 35px;" onClick="openDeleteWarning('${user.id}')"><i class="fa-solid fa-user-minus"></i></button></div>
+        <span role="button" class="text-success" onclick="updateUserClickHandler(${user.id})" > edit </span>
+        <span role="button" class="px-1" > / </span>
+        <span role="button" class="text-danger" onClick="openDeleteWarning('${user.id}')"> delete </span>
         
         </div>
 

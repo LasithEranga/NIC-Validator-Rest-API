@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amaranth&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/4f128951c5.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <title>Manage Users - UMS</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .w-4 {
+        width: 4rem;
+      }
+      .border-isselected {
+        position: relative;
+        color: white;
+      }
+      .border-isnotselected {
+        border-left: 5px;
+        line-height: 10px;
+        color: white;
+      }
+
+      .border-isselected:after {
+        content: "";
+        background: rgb(253, 252, 252);
+        position: absolute;
+        top: 30%;
+        left: 0;
+        height: 40%;
+        width: 3px;
+      }
+      .amarnath {
+        font-family: "Amaranth", sans-serif;
+      }
+      .bg-table{
+        background-color: rgb(236, 236, 236);
+      }
+      .tb-body > div:nth-child(odd){
+        background-color: rgb(255, 255, 255);
+      }
+      .tb-body > div:nth-child(even){
+        background-color: rgb(133, 77, 77);
+      }
+     
+
+    </style>
+  </head>
+
+  <body class="d-flex">
+    <div class="bg-primary vh-100 w-4">
+      <div class="column">
+        <div class="py-4 d-flex justify-content-center fw-bold text-light">
+          UMS
+        </div>
+        <div class="py-4 d-flex"></div>
+        <div class="py-4 d-flex justify-content-center border-isnotselected">
+            <a href="/dashboard.html"> <i class="fa-sharp fa-solid fa-home fs-5 text-light"></i></a>
+        </div>
+        <div class="py-4 d-flex justify-content-center border-isselected">
+          <i class="fa-sharp fa-solid fa-users fs-5 "></i>
+        </div>
+        <div class="py-4 d-flex justify-content-center border-isnotselected">
+          <i class="fa-sharp fa-solid fa-file-invoice fs-3 "></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-light w-100 d-flex">
+      <div class="col-12">
+        <div class="pt-3 ps-4 fs-2 fw-semibold amarnath">
+          Manage User Details
+        </div>
+
+        <div class=" ps-4 mt-3">
+            
+            <div class=" d-flex py-3 bg-table rounded-2 ps-3 me-5 amarnath">
+                <div class="col-2 ">
+                    NIC Number
+                </div>
+                <div class="col-2 ">
+                    Full Name
+                </div>
+                <div class="col-2 ">
+                    Address
+                </div>
+                <div class="col-1  ">
+                    Birthday
+                </div>
+                <div class="col-2 ">
+                    Nationality
+                </div>
+                <div class="col-1 ">
+                    Gender
+                </div>
+                <div class="col ps-5">
+                    edit/delete
+                </div>
+
+            </div>
+            <div class="tb-body me-5 " id="content">
+
+                <div class=" d-flex py-2 my-1 bg-table rounded-2 ps-3 amarnath">
+                    <div class="col-2 ">
+                        NIC Number
+                    </div>
+                    <div class="col-2 ">
+                        Full Name
+                    </div>
+                    <div class="col-2 ">
+                        Address
+                    </div>
+                    <div class="col-1  ">
+                        Birthday
+                    </div>
+                    <div class="col-2 ">
+                        Nationality
+                    </div>
+                    <div class="col-1 ">
+                        Gender
+                    </div>
+                    <div class="col ps-5">
+                        edit/delete
+                    </div>
+    
+                </div>
+
+                <div class=" d-flex py-2 my-1 bg-table rounded-2 ps-3 amarnath">
+                    <div class="col-2 ">
+                        NIC Number
+                    </div>
+                    <div class="col-2 ">
+                        Full Name
+                    </div>
+                    <div class="col-2 ">
+                        Address
+                    </div>
+                    <div class="col-1  ">
+                        Birthday
+                    </div>
+                    <div class="col-2 ">
+                        Nationality
+                    </div>
+                    <div class="col-1 ">
+                        Gender
+                    </div>
+                    <div class="col ps-5">
+                        edit/delete
+                    </div>
+    
+                </div>
+
+
+            </div>
+          
+
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+
+
+    
+<!--Add/Update Modal  -->
+<div class="modal fade" id="addUpdateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-height: 80vh;">
+      <div class="modal-content rounded-0 border-0 p-2">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-semibold" id="title">New User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body border-0" >
+          <div>
+            <input id="old-nic" hidden  name="old-nic" class="w-100 form-control" />
+            
+            <div class="d-md-flex justify-content-center mt-2 ">
+              <label name="fullName"  class="col-12 col-md-4">Full Name:</label>
+              <div class="w-100 mt-2 mt-md-0">
+                <input id="fullName" onblur="validateName(fullNameField,fullNameError)"  class="w-100 form-control" />
+                <div class="  v-none text-danger error pt-1" id="fullNameError">.</div>
+              </div>
+            </div>
+            
+            <div class="d-md-flex justify-content-center mt-2">
+              <label name="nic"  class="col-12 col-md-4">NIC No:</label>
+              <div class="w-100 mt-2 mt-md-0">
+                <input id="nic" onblur="generateDobGenderAge()" class="w-100 form-control" />
+                <div class="  v-none text-danger error pt-1" id="nicError">.</div>
+              </div>
+            </div>
+    
+            <div class="d-md-flex justify-content-center mt-3">
+              <label name="dob"  class="col-12 col-md-4">Date of birth:</label>
+              <div class="w-100 mt-2 mt-md-0">
+                <input id="dob" disabled type="date" class="w-100 form-control" />
+                <div class="  v-none text-danger error" id="dobError"></div>
+              </div>
+            </div>
+    
+            <div class="d-md-flex justify-content-center mt-4">
+              <label class="col-12 col-md-4">Age:</label>
+              <div class="w-100 mt-2 mt-md-0">
+                <input id="age" disabled="true"  class="w-100 form-control" />
+              </div>
+            </div>
+    
+            <div class="d-md-flex justify-content-center mt-4">
+              <label name="address" class="col-12 col-md-4">Address:</label>
+              <div class="w-100 mt-2 mt-md-0">
+                <textarea id="address" onblur="validateAddress(addressField,addressError)" class="w-100 form-control" ></textarea>
+                <div class="  v-none text-danger error pt-1" id="addressError">.</div>
+              </div>
+            </div>
+    
+            <div class="d-md-flex justify-content-center mt-3">
+              <label name="nationality"  class="col-12 col-md-4">Nationality:</label>
+              <div class="w-100 mt-2 mt-md-0">
+                <select id="nationality"  class="form-select w-100" >
+                    <option value="Sinhalese">Sinhalese</option>
+                    <option value="Hindu">Hindu</option>
+                    <option value="Islamic">Islamic</option>
+                </select>
+                <div class="  d-none text-danger" id="nationalityError"></div>
+              </div>
+            </div>
+    
+            <div class="d-md-flex justify-content-center mt-3">
+              <label class="col-12 col-md-4">Gender:</label>
+              <div class="w-100 mt-2 mt-md-0">
+                <input type="radio" id="male" disabled="true" value="Male" name="gender"/> Male
+                <input type="radio" id="female" disabled="true" class="ms-5" value="Female" name="gender" /> Female
+                <div class="  d-none text-danger" id="genderError"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary rounded-1 px-4" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary rounded-1 px-4" id="btnSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal dialog for delete warning  -->
+<div class="modal fade" id="deleteModal" tabindex="-1" >
+    <div class="modal-dialog modal-dialog-centered" >
+      <div class="modal-content rounded-0 border-0" style="width:80%">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Delete User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body border-0" id="message">
+        Are you sure you want to remove this user?
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-primary rounded-1" id="btnOkay">Yes</button>
+          <button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<!-- Modal dialog for nic change -->
+<div class="modal fade" id="warningModal" tabindex="-1" >
+    <div class="modal-dialog modal-dialog-centered px-5" >
+      <div class="modal-content rounded-0 " >
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Update Warning</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body border-0">
+        You have updated the NIC Number.<br> Do you really need to continue
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal" onclick="goBackClickHandler()">Go Back</button>
+          <button type="button" class="btn btn-primary rounded-1" onclick="userActionHandler()">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- toast message -->
+  <div class="toast-container position-fixed bottom-0 p-3" style="width:25rem;">
+    <div id="toast" class="toast" role="alert">
+      <div class="toast-header">
+        <i class="fa-sharp fa-solid fa-circle-info text-primary me-2"></i>
+        <strong class="me-auto">User management system</strong>
+        <small>Just now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body bg-light mt-0" id="toastContent">
+  
+      </div>
+    </div>
+  </div>
+
+
+
+    <button onclick="addUserClickHandler()" class="btn btn-secondary position-fixed rounded-circle d-flex justify-content-center align-items-center btn border-0" style="bottom: 40px;right: 40px; width: 50px;height: 50px;"><i class="fa-solid fa-user-plus text-light ps-1"></i></div></button>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="./script.js" ></script>
+    <script src="./TableRow.js" ></script>
+    
+    <script>
+      const newNic = document.getElementById('nic');
+      const noInfo = document.getElementById("no-info");
+      const formTitle = document.getElementById('title');
+      const content = document.getElementById("content");
+      const btnOkay = document.getElementById('btnOkay');
+      const btnSave = document.getElementById('btnSave');
+      const toastMessage = document.getElementById('toast');
+      const toastContent = document.getElementById('toastContent');
+      const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      const addUpdateModal = new bootstrap.Modal(document.getElementById('addUpdateModal'));
+      const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
+      
+      let oldNic;
+      let userId;
+      let formtosubmit;
+      let users = [];
+      let requestBody = {
+            "requestId": "454564",
+            "requestDate": new Date().toLocaleString(),
+            "action": "updateUser",
+            "actionPerformedBy": "system",
+            "user": {}
+        }
+
+
+
+    //fetch data from api
+    
+    
+    const getUsers = async () => {
+
+      requestBody.requestId = Math.random()*10000;
+      requestBody.requestDate =  new Date().toLocaleString();
+      requestBody.action = "allUsers";
+      requestBody.actionPerformedBy = "Lasith";
+      
+      await fetch('http://localhost:8080/RestAPI/NICValidator/user',{
+        method:"POST",
+        headers:{
+          'Content-type':'application/json'
+        },
+        body:JSON.stringify(requestBody)
+      })
+      .then((response)=>response.json())
+      .then((data)=>{
+        users = data.users;
+      })
+      .catch((error)=>{
+        console.log(error)
+      })
+
+
+      //display no info dialog if no users are available in database.
+      if(users.length === 0){
+        content.style.display = "none";
+        noInfo.style.display = "unset";
+      }
+      else{
+        noInfo.style.display = "none";
+        content.style.display = "unset";
+        let contentHtml = "";
+        users.forEach(user => {
+          let dob = new Date(user.dob).getFullYear();
+          let currentYear = new Date().getFullYear();
+          let age = currentYear - dob;
+          
+          contentHtml +=  TableRow(user.nic, user.fullName, user.address, user.dob, user.nationalty, user.gender, editBtn, deleteBtn )
+        });
+        content.innerHTML = contentHtml;
+      }
+    }
+
+
+    //getUsers()
+
+
+    //shows delete warning
+    const openDeleteWarning = (id) => {
+      deleteModal.show();
+      btnOkay.setAttribute('onClick',`modalOkayButtonClickHandler('${id}')`)
+    }
+
+
+    //removes the details on user confirmation
+    const modalOkayButtonClickHandler = (id) => {
+      
+      requestBody.requestId = Math.random()*10000;
+      requestBody.requestDate =  new Date().toLocaleString();
+      requestBody.action = "deleteUser";
+      requestBody.actionPerformedBy = "system";
+      requestBody.user = { "id": id }
+
+      deleteModal.hide()
+      fetch(`http://localhost:8080/RestAPI/NICValidator/user`,{
+        method:"POST",
+        headers:{
+          'Content-type':'application/json'
+        },
+        body:JSON.stringify(requestBody)      
+      })
+      .then(response => response.json())
+      .then((result) => {
+        toastContent.innerHTML = result.message
+        new bootstrap.Toast(toastMessage).show();
+        getUsers()
+
+      })
+      .catch((error)=>{console.log(error)})
+    }
+
+
+    const addUserClickHandler = () => {
+      clearFields();
+      btnSave.setAttribute('onclick',"saveUserDetails()")
+      formTitle.innerText = "New User";
+      clearFields();
+      addUpdateModal.show();
+    }
+
+
+    //retrive user data from db and fill update form
+    const updateUserClickHandler = (id) => {
+
+      requestBody.requestId = Math.random()*10000;
+      requestBody.requestDate =  new Date().toLocaleString();
+      requestBody.action = "searchUser";
+      requestBody.actionPerformedBy = "system";
+      requestBody.user = { "id": id }
+
+      clearFields();
+      userId = id;
+
+      btnSave.setAttribute('onclick',"updateUserDetails()");
+      formTitle.innerText = "Update User";
+
+      fetch(`http://localhost:8080/RestAPI/NICValidator/user`,{
+        method:"POST",
+        headers:{
+          'Content-type':'application/json'
+        },
+        body:JSON.stringify(requestBody)
+      })
+      .then(response => response.json())
+      .then((data) => {
+        let user = data.users;
+        clearFields();
+        oldNic = user.nic;
+        nicField.value = user.nic;
+        fullNameField.value = user.fullName;
+        addressField.value = user.address;
+        dobField.value = user.dob;
+        nationalityField.value = user.nationality;
+        generateDobGenderAge();
+        
+      })
+      .catch((error)=>{console.log(error)})
+      addUpdateModal.show();
+    }
+
+
+    //save new user details to the database
+    const saveUserDetails = () => {
+        
+        let isNameValid = validateName(fullNameField,fullNameError);
+        let isAddressValid = validateAddress(addressField,addressError);
+        let [year, month, date, gender,isNicvalid] = validateNIC();
+
+        
+
+        if(isNameValid && isAddressValid && isNicvalid){
+            
+          requestBody.requestId = Math.random()*10000;
+          requestBody.requestDate =  new Date().toLocaleString();
+          requestBody.action = "insertUser";
+          requestBody.actionPerformedBy = "Lasith";
+          requestBody.user = { 
+                                "nic":nicField.value,       
+                                "fullName":fullNameField.value,
+                                "address":addressField.value,
+                                "dob":dobField.value,
+                                "nationality":nationalityField.value,
+                                "gender":seletectedGender,
+                                "created_by":"system"
+                              }
+
+            fetch('http://localhost:8080/RestAPI/NICValidator/user',{
+              method:"POST",
+              headers:{
+                'Content-type':'application/json'
+              },
+              body:JSON.stringify(requestBody)
+            })
+            .then(response => response.json())
+            .then((result) => {
+              toastContent.innerHTML = result.message
+              new bootstrap.Toast(toastMessage).show();
+              addUpdateModal.hide()
+              getUsers()
+            })
+            .catch((error)=>{console.log(error)})
+        }
+    }
+
+    //update user details in the database
+    const updateDetails = () => {
+
+        requestBody.requestId = Math.random()*10000;
+        requestBody.requestDate =  new Date().toLocaleString();
+        requestBody.action = "updateUser";
+        requestBody.actionPerformedBy = "Lasith";
+        requestBody.user = {
+                              "id": userId,
+                              "nic": nicField.value,
+                              "fullName": fullNameField.value,
+                              "nationality": nationalityField.value,
+                              "gender": seletectedGender,
+                              "dob": dobField.value,
+                              "address": addressField.value,
+                              "modified_by": "lasith"
+                            }
+
+        fetch(`http://localhost:8080/RestAPI/NICValidator/user`,{
+          method:"POST",
+          headers:{
+            'Content-type':'application/json'
+          },
+          body:JSON.stringify(requestBody)
+        })
+        .then(response => response.text())
+        .then((result) => {
+          result = JSON.parse(result)
+          toastContent.innerHTML = result.message
+          new bootstrap.Toast(toastMessage).show();
+          addUpdateModal.hide()
+          getUsers()
+        })
+        .catch((error)=>{console.log(error)})
+
+    }
+
+    const userActionHandler = () =>{
+      //if user confirms the nic change, form will be submitted
+      warningModal.hide()
+      updateDetails();
+    }
+
+    const updateUserDetails = () => {
+
+        let isNameValid = validateName(fullNameField,fullNameError);
+        let isAddressValid = validateAddress(addressField,addressError);
+        let [year, month, date, gender,isNicvalid] = validateNIC();
+        
+        if(isNameValid && isAddressValid && isNicvalid){
+          if(nicField.value !== oldNic){
+              addUpdateModal.hide();
+              warningModal.show();
+          }else{
+            updateDetails();
+          }
+        }
+      
+    }
+
+    const goBackClickHandler = () => {
+      warningModal.hide();
+      addUpdateModal.show();
+    }
+            
+    </script>
+  </body>
+</html>

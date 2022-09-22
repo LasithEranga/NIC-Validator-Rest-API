@@ -6,8 +6,11 @@ let requestBody = {
   user: {},
 };
 
+let allUserCount = 0;
+let allUsers = [];
+
 const setUserCount = (element) => {
-  requestBody.requestId = Math.random() * 10000;
+  requestBody.requestId = (Math.random() * 10000).toFixed(0);
   requestBody.requestDate = new Date().toLocaleString();
   requestBody.action = "allUsers";
   requestBody.actionPerformedBy = "Lasith";
@@ -34,6 +37,9 @@ const setUserCount = (element) => {
         genderChart.update();
         nationaltyChart.update();
         myChart.update();
+        //set activity count
+        setActivityCount(updatedCount, updatePercentage, 1, "update");
+        setActivityCount(deletedCount, deletePercentage, 1, "delete");
       }
     })
     .catch((error) => {
@@ -42,7 +48,7 @@ const setUserCount = (element) => {
 };
 
 const setFilteredCount = (element, interval) => {
-  requestBody.requestId = Math.random() * 10000;
+  requestBody.requestId = (Math.random() * 10000).toFixed(0);
   requestBody.requestDate = new Date().toLocaleString();
   requestBody.range = interval;
   requestBody.action = "filteredResult";
@@ -69,7 +75,7 @@ const setFilteredCount = (element, interval) => {
 };
 
 const setActivityCount = (element, percentageElement, interval, filterBy) => {
-  requestBody.requestId = Math.random() * 10000;
+  requestBody.requestId = (Math.random() * 10000).toFixed(0);
   requestBody.requestDate = new Date().toLocaleString();
   requestBody.range = interval;
   requestBody.action = "getActivities";
@@ -167,7 +173,6 @@ const setAgeGroupGraph = () => {
 };
 
 const setRecentActivities = (element) => {
-
   requestBody.requestId = Math.random() * 10000;
   requestBody.requestDate = new Date().toLocaleString();
   requestBody.action = "getRecentActivities";
@@ -198,8 +203,15 @@ const setRecentActivities = (element) => {
                     </div>
                 </div>
                 <div class="ps-3">
-                    <div class="amarnath">${user.modified_at ? "User details updated" : "User details created"}</div>
-                    <div class="text-secondary fs-6">${ user.modified_at ? timeNow - user.modified_at.slice(3, 5) + " min ago": timeNow - user.created_at.slice(3, 5)  + " min ago"
+                    <div class="amarnath">${
+                      user.modified_at
+                        ? "User details updated"
+                        : "User details created"
+                    }</div>
+                    <div class="text-secondary fs-6">${
+                      user.modified_at
+                        ? timeNow - user.modified_at.slice(3, 5) + " min ago"
+                        : timeNow - user.created_at.slice(3, 5) + " min ago"
                     }</div>
                 </div>
                 </div>`;

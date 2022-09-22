@@ -4,22 +4,11 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
-      crossorigin="anonymous"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Amaranth&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      src="https://kit.fontawesome.com/4f128951c5.js"
-      crossorigin="anonymous"
-    ></script>
+    <link href="https://fonts.googleapis.com/css2?family=Amaranth&display=swap" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/4f128951c5.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <title>Manage Users - UMS</title>
     <style>
@@ -77,10 +66,10 @@
         font-size: 0.7rem;
         line-height: 0.6rem;
       }
-      a{
+      a {
         text-decoration: none;
       }
-      .selected-page{
+      .selected-page {
         color: black !important;
       }
     </style>
@@ -89,14 +78,10 @@
   <body class="d-flex">
     <div class="bg-primary vh-100 w-4">
       <div class="column">
-        <div class="py-4 d-flex justify-content-center fw-bold text-light">
-          UMS
-        </div>
+        <div class="py-4 d-flex justify-content-center fw-bold text-light">UMS</div>
         <div class="py-4 d-flex"></div>
         <div class="py-4 d-flex justify-content-center border-isnotselected">
-          <a href="/dashboard.html">
-            <i class="fa-sharp fa-solid fa-home fs-5 text-light"></i
-          ></a>
+          <a href="/dashboard.html"> <i class="fa-sharp fa-solid fa-home fs-5 text-light"></i></a>
         </div>
         <div class="py-4 d-flex justify-content-center border-isselected">
           <i class="fa-sharp fa-solid fa-users fs-5"></i>
@@ -109,48 +94,40 @@
 
     <div class="bg-light w-100 d-flex">
       <div class="col-12">
-        <div
-          class="pt-3 ps-4 fs-2 fw-semibold amarnath d-flex justify-content-between pe-5"
-        >
+        <div class="pt-3 ps-4 fs-2 fw-semibold amarnath d-flex justify-content-between pe-5">
           Manage User Details
-          <span
-            class="text-primary"
-            role="button"
-            onclick="addUserClickHandler()"
-          >
-            New User</span
-          >
+          <span class="text-primary" role="button" onclick="addUserClickHandler()"> New User</span>
         </div>
 
         <div class="ps-4 mt-3">
-
-          <div class="d-flex py-3 bg-table rounded-0 ps-3 me-5 amarnath">
-            <div class="col-2">NIC Number</div>
+          <div class="d-flex py-3 bg-table rounded-0 ps-3 me-5 amarnath text-center">
+            <div class="px-3">No</div>
+            <div class="col-1">NIC Number</div>
             <div class="col-2">Name</div>
             <div class="col-2">Address</div>
             <div class="col-1">Birthday</div>
-            <div class="col-2">Nationality</div>
+            <div class="col-1">Nationality</div>
             <div class="col-1">Gender</div>
-            <div class="col text-center pe-4">Actions</div>
+            <div class="col-2">Last modified</div>
+            <div class="col text-center pe-3">Actions</div>
           </div>
 
           <div class="tb-body me-5" id="content"></div>
 
-
-          <div class="d-flex justify-content-end pe-5 mt-3">
-            <span role="button" class=" p-1 bg-primary px-2"> <i class="fa-sharp fa-solid fa-angle-left text-light"></i> </span>
-            <div class="pt-1" id="paginationContent">
-                
+          <div class="d-flex justify-content-between mt-3">
+            <div>
+              <span id="paginatedUserCount" class="amarnath">Showing 23 of 433 Users </span>
             </div>
-            <span role="button" class=" p-1 bg-primary px-2"> <i class="fa-sharp fa-solid fa-angle-right text-light"></i> </span>
 
+            <div class="d-flex justify-content-end pe-5">
+              <span role="button" class="p-1 bg-primary px-2"> <i class="fa-sharp fa-solid fa-angle-left text-light"></i> </span>
+              <div class="pt-1" id="paginationContent"></div>
+              <span role="button" class="p-1 bg-primary px-2"> <i class="fa-sharp fa-solid fa-angle-right text-light"></i> </span>
+            </div>
           </div>
-
-
         </div>
       </div>
     </div>
-
 
     <!--Add/Update Modal  -->
     <div class="modal fade" id="addUpdateModal" tabindex="-1">
@@ -158,60 +135,32 @@
         <div class="modal-content rounded-0 border-0 p-2">
           <div class="modal-header border-0">
             <h5 class="modal-title fw-semibold" id="title">New User</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body border-0">
             <div>
-              <input
-                id="old-nic"
-                hidden
-                name="old-nic"
-                class="w-100 form-control"
-              />
+              <input id="old-nic" hidden name="old-nic" class="w-100 form-control" />
 
               <div class="d-md-flex justify-content-center mt-2">
-                <label name="fullName" class="col-12 col-md-4"
-                  >Full Name:</label
-                >
+                <label name="fullName" class="col-12 col-md-4">Full Name:</label>
                 <div class="w-100 mt-2 mt-md-0">
-                  <input
-                    id="fullName"
-                    onblur="validateName(fullNameField,fullNameError)"
-                    class="w-100 form-control"
-                  />
-                  <div class="v-none text-danger error pt-1" id="fullNameError">
-                    .
-                  </div>
+                  <input id="fullName" onblur="validateName(fullNameField,fullNameError)" class="w-100 form-control" />
+                  <div class="v-none text-danger error pt-1" id="fullNameError">.</div>
                 </div>
               </div>
 
               <div class="d-md-flex justify-content-center mt-2">
                 <label name="nic" class="col-12 col-md-4">NIC No:</label>
                 <div class="w-100 mt-2 mt-md-0">
-                  <input
-                    id="nic"
-                    onblur="generateDobGenderAge()"
-                    class="w-100 form-control"
-                  />
-                  <div class="v-none text-danger error pt-1" id="nicError">
-                    .
-                  </div>
+                  <input id="nic" onblur="generateDobGenderAge()" class="w-100 form-control" />
+                  <div class="v-none text-danger error pt-1" id="nicError">.</div>
                 </div>
               </div>
 
               <div class="d-md-flex justify-content-center mt-3">
                 <label name="dob" class="col-12 col-md-4">Date of birth:</label>
                 <div class="w-100 mt-2 mt-md-0">
-                  <input
-                    id="dob"
-                    disabled
-                    type="date"
-                    class="w-100 form-control"
-                  />
+                  <input id="dob" disabled type="date" class="w-100 form-control" />
                   <div class="v-none text-danger error" id="dobError">.</div>
                 </div>
               </div>
@@ -226,21 +175,13 @@
               <div class="d-md-flex justify-content-center mt-4">
                 <label name="address" class="col-12 col-md-4">Address:</label>
                 <div class="w-100 mt-2 mt-md-0">
-                  <textarea
-                    id="address"
-                    onblur="validateAddress(addressField,addressError)"
-                    class="w-100 form-control"
-                  ></textarea>
-                  <div class="v-none text-danger error pt-1" id="addressError">
-                    .
-                  </div>
+                  <textarea id="address" onblur="validateAddress(addressField,addressError)" class="w-100 form-control"></textarea>
+                  <div class="v-none text-danger error pt-1" id="addressError">.</div>
                 </div>
               </div>
 
               <div class="d-md-flex justify-content-center mt-3">
-                <label name="nationality" class="col-12 col-md-4"
-                  >Nationality:</label
-                >
+                <label name="nationality" class="col-12 col-md-4">Nationality:</label>
                 <div class="w-100 mt-2 mt-md-0">
                   <select id="nationality" class="form-select w-100">
                     <option value="Sinhalese">Sinhalese</option>
@@ -254,22 +195,9 @@
               <div class="d-md-flex justify-content-center mt-3">
                 <label class="col-12 col-md-4">Gender:</label>
                 <div class="w-100 mt-2 mt-md-0">
-                  <input
-                    type="radio"
-                    id="male"
-                    disabled="true"
-                    value="Male"
-                    name="gender"
-                  />
+                  <input type="radio" id="male" disabled="true" value="Male" name="gender" />
                   Male
-                  <input
-                    type="radio"
-                    id="female"
-                    disabled="true"
-                    class="ms-5"
-                    value="Female"
-                    name="gender"
-                  />
+                  <input type="radio" id="female" disabled="true" class="ms-5" value="Female" name="gender" />
                   Female
                   <div class="d-none text-danger" id="genderError"></div>
                 </div>
@@ -277,20 +205,8 @@
             </div>
           </div>
           <div class="modal-footer border-0">
-            <button
-              type="button"
-              class="btn btn-secondary rounded-1 px-4"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary rounded-1 px-4"
-              id="btnSave"
-            >
-              Save
-            </button>
+            <button type="button" class="btn btn-secondary rounded-1 px-4" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary rounded-1 px-4" id="btnSave">Save</button>
           </div>
         </div>
       </div>
@@ -302,30 +218,12 @@
         <div class="modal-content rounded-0 border-0" style="width: 80%">
           <div class="modal-header border-0">
             <h5 class="modal-title">Delete User</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-          <div class="modal-body border-0" id="message">
-            Are you sure you want to remove this user?
-          </div>
+          <div class="modal-body border-0" id="message">Are you sure you want to remove this user?</div>
           <div class="modal-footer border-0">
-            <button
-              type="button"
-              class="btn btn-primary rounded-1"
-              id="btnOkay"
-            >
-              Yes
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary rounded-1"
-              data-bs-dismiss="modal"
-            >
-              No
-            </button>
+            <button type="button" class="btn btn-primary rounded-1" id="btnOkay">Yes</button>
+            <button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal">No</button>
           </div>
         </div>
       </div>
@@ -337,64 +235,34 @@
         <div class="modal-content rounded-0">
           <div class="modal-header border-0">
             <h5 class="modal-title">Update Warning</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body border-0">
             You have updated the NIC Number.<br />
             Do you really need to continue
           </div>
           <div class="modal-footer border-0">
-            <button
-              type="button"
-              class="btn btn-secondary rounded-1"
-              data-bs-dismiss="modal"
-              onclick="goBackClickHandler()"
-            >
-              Go Back
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary rounded-1"
-              onclick="userActionHandler()"
-            >
-              Continue
-            </button>
+            <button type="button" class="btn btn-secondary rounded-1" data-bs-dismiss="modal" onclick="goBackClickHandler()">Go Back</button>
+            <button type="button" class="btn btn-primary rounded-1" onclick="userActionHandler()">Continue</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- toast message -->
-    <div
-      class="toast-container position-fixed bottom-0 end-0 p-3"
-      style="width: 25rem"
-    >
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="width: 25rem">
       <div id="toast" class="toast" role="alert">
         <div class="toast-header">
           <i class="fa-sharp fa-solid fa-circle-info text-primary me-2"></i>
           <strong class="me-auto">User management system</strong>
           <small>Just now</small>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body bg-light mt-0" id="toastContent"></div>
       </div>
     </div>
-    
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
     <script src="./script.js"></script>
     <script src="./TableRow.js"></script>
@@ -408,17 +276,12 @@
       const btnSave = document.getElementById("btnSave");
       const toastMessage = document.getElementById("toast");
       const toastContent = document.getElementById("toastContent");
+      const paginatedUserCount = document.getElementById("paginatedUserCount");
       let rowsPerPage = 7;
 
-      const deleteModal = new bootstrap.Modal(
-        document.getElementById("deleteModal")
-      );
-      const addUpdateModal = new bootstrap.Modal(
-        document.getElementById("addUpdateModal")
-      );
-      const warningModal = new bootstrap.Modal(
-        document.getElementById("warningModal")
-      );
+      const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
+      const addUpdateModal = new bootstrap.Modal(document.getElementById("addUpdateModal"));
+      const warningModal = new bootstrap.Modal(document.getElementById("warningModal"));
 
       let oldNic;
       let userId;
@@ -470,14 +333,12 @@
 
         //set btn styles for pagination btns
         let btns = document.getElementsByClassName("pg-btn");
-        
+
         for (let k = 0; k < btns.length; k++) {
-          btns[k].classList.remove('selected-page');
+          btns[k].classList.remove("selected-page");
         }
-      
-        document.getElementById(`pg-${offset/rowsPerPage}`).classList.add('selected-page')
 
-
+        document.getElementById(`pg-${offset / rowsPerPage}`).classList.add("selected-page");
         fetch("http://localhost:8080/RestAPI/NICValidator/user", {
           method: "POST",
           headers: {
@@ -489,8 +350,9 @@
           .then((data) => {
             let usersSet = data.users;
             let contentHtml = "";
-            usersSet.forEach((user) => {
-              contentHtml += TableRow(user);
+            usersSet.map((user,index) => {
+              contentHtml += TableRow(user, offset + 1 + index);
+              paginatedUserCount.innerHTML = `Showing ${offset + 1} - ${offset + usersSet.length}  of ${users.length} Users`;
             });
             content.innerHTML = contentHtml;
           })
@@ -500,25 +362,22 @@
       };
 
       const setPagination = () => {
-
         let userCount = users.length;
-        let contentHtml ="";
+        let contentHtml = "";
         let noOfPages = (userCount / rowsPerPage).toFixed(0);
-        if(userCount % rowsPerPage > 0){
+        if (userCount % rowsPerPage > 0) {
           noOfPages++;
         }
         let start = 0;
         let end = 0;
-        const paginationContent = document.getElementById('paginationContent');
-        let paginationBtns = ""
-        for (let i=0; i < noOfPages; i++){
-          contentHtml +=`<span  role="button" onclick="setTableRows(${i*rowsPerPage})" id="pg-${i}" class="p-1 px-3 fw-bold  pg-btn text-primary">${i+1}</span>`
+        const paginationContent = document.getElementById("paginationContent");
+        let paginationBtns = "";
+        for (let i = 0; i < noOfPages; i++) {
+          contentHtml += `<span  role="button" onclick="setTableRows(${i * rowsPerPage})" id="pg-${i}" class="p-1 px-3 fw-bold  pg-btn text-primary">${i + 1}</span>`;
         }
-        
-        paginationContent.innerHTML = contentHtml
-      
-      };
 
+        paginationContent.innerHTML = contentHtml;
+      };
 
       //shows delete warning
       const openDeleteWarning = (id) => {

@@ -190,11 +190,12 @@ const setRecentActivities = (element) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-        let timeNow = new Date().toLocaleTimeString().slice(2, 4);
+        
         let activities = data.users;
 
         activities.map((user) => {
-
+          let timeNow = new Date().toLocaleTimeString().slice(2, 4);
+          
           template += `
                 <div class="d-flex col-11 my-2">
                 <div class="">

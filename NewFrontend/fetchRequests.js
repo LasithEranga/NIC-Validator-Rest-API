@@ -25,7 +25,7 @@ const setUserCount = (element) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-        //returns the count of users
+        
         allUsers = data.users;
         allUserCount = data.users.length;
         element.innerHTML = `${allUserCount}  ${
@@ -125,7 +125,7 @@ const setNationaltyGraph = () => {
   let Sinhalese = 0;
   let Hindu = 0;
   let Islamic = 0;
-  console.log(allUsers);
+
   allUsers.map((user) => {
     if (user.nationality === "Sinhalese") {
       Sinhalese++;
@@ -194,7 +194,7 @@ const setRecentActivities = (element) => {
         let activities = data.users;
 
         activities.map((user) => {
-          console.log(user);
+
           template += `
                 <div class="d-flex col-11 my-2">
                 <div class="">

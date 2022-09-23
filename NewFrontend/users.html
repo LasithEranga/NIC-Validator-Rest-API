@@ -104,7 +104,7 @@
       <div class="col-12">
         <div class="pt-3 ps-4 fs-2 fw-semibold amarnath d-flex justify-content-between pe-5">
           Manage User Details
-          <span class="text-primary" role="button" onclick="addUserClickHandler()"> New User</span>
+          <span class="text-primary fs-3 pt-2" role="button" onclick="addUserClickHandler()"> New User</span>
         </div>
 
         <div class="ps-4 mt-3">
@@ -129,7 +129,7 @@
 
             <div class="d-flex justify-content-end pe-5">
               <span role="button" id="back-btn" class="p-1 bg-primary px-2 bg-secondary"> <i class="fa-sharp fa-solid fa-angle-left text-light"></i> </span>
-              <div class="pt-1 text-center" id="paginationContent" style="width: 8rem"></div>
+              <div class="pt-1 text-center" id="paginationContent" style="min-width: 9rem"></div>
               <span role="button" id="forward-btn" class="p-1 bg-primary px-2" onclick="paginationForwardClickHandler()"> <i class="fa-sharp fa-solid fa-angle-right text-light"></i> </span>
             </div>
           </div>
@@ -378,7 +378,7 @@
       };
 
       const setPagination = () => {
-        userCount = users.length + 10;
+        userCount = users.length ;
         let contentHtml = "";
         noOfPages = (userCount / rowsPerPage).toFixed(0);
         if (userCount % rowsPerPage > 0) {

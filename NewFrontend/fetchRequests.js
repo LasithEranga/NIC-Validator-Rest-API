@@ -194,7 +194,9 @@ const setRecentActivities = (element) => {
         let activities = data.users;
 
         activities.map((user) => {
-          let timeNow = new Date().toLocaleTimeString().slice(2, 4);
+          let timeNowHours = new Date().toLocaleTimeString('en-US', {hour12: false}).slice(0,2)
+          let timeNowMiniutes = new Date().toLocaleTimeString('en-US', {hour12: false}).slice(3,5);
+          let timeInMinutes = Number(timeNowHours * 60) + Number (timeNowMiniutes);
           
           template += `
                 <div class="d-flex col-11 my-2">
@@ -211,8 +213,8 @@ const setRecentActivities = (element) => {
                     }</div>
                     <div class="text-secondary fs-6">${
                       user.modified_at
-                        ? timeNow - user.modified_at.slice(3, 5) + " min ago"
-                        : timeNow - user.created_at.slice(3, 5) + " min ago"
+                        ? timeInMinutes - Number(user.modified_at.slice(0, 2) * 60) + Number(user.modified_at.slice(3, 5)) + " min ago"
+                        : timeInMinutes - Number(user.created_at.slice(0, 2) * 60) + Number(user.created_at.slice(3, 5)) + " min ago"
                     }</div>
                 </div>
                 </div>`;

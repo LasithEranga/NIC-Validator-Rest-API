@@ -400,16 +400,17 @@
 
       const paginationForwardClickHandler = () => {
         btnOffset++;
-        if (noOfPages - 1 === btnOffset) {
+
+        setPagination();
+        document.getElementById(`pg-${btnOffset}`).click();
+        backBtn.setAttribute("onclick", "paginationBackClickHandler()");
+        backBtn.classList.add("bg-primary");
+        backBtn.classList.remove("bg-secondary");
+
+        if (noOfPages - 2 === btnOffset) {
           forwardBtn.setAttribute("onclick", "");
           forwardBtn.classList.remove("bg-primary");
           forwardBtn.classList.add("bg-secondary");
-        } else {
-          setPagination();
-          document.getElementById(`pg-${btnOffset}`).click();
-          backBtn.setAttribute("onclick", "paginationBackClickHandler()");
-          backBtn.classList.add("bg-primary");
-          backBtn.classList.remove("bg-secondary");
         }
       };
       const paginationBackClickHandler = () => {

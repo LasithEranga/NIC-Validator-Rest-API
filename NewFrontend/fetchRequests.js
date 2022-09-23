@@ -197,7 +197,14 @@ const setRecentActivities = (element) => {
           let timeNowHours = new Date().toLocaleTimeString('en-US', {hour12: false}).slice(0,2)
           let timeNowMiniutes = new Date().toLocaleTimeString('en-US', {hour12: false}).slice(3,5);
           let timeInMinutes = Number(timeNowHours * 60) + Number (timeNowMiniutes);
-          
+          let modifiedBefore = user.modified_at ? timeInMinutes - Number(user.modified_at.slice(0, 2) * 60) + Number(user.modified_at.slice(3, 5)) : "";
+          let createdBefore = timeInMinutes - Number(user.created_at.slice(0, 2) * 60) + Number(user.created_at.slice(3, 5))
+          if(modifiedBefore > 60){
+            modifiedBefore = modifiedBefore - 60
+          }
+          if(createdBefore > 60){
+            createdBefore = createdBefore - 60
+          }
           template += `
                 <div class="d-flex col-11 my-2">
                 <div class="">
@@ -213,8 +220,8 @@ const setRecentActivities = (element) => {
                     }</div>
                     <div class="text-secondary fs-6">${
                       user.modified_at
-                        ? timeInMinutes - Number(user.modified_at.slice(0, 2) * 60) + Number(user.modified_at.slice(3, 5)) + " min ago"
-                        : timeInMinutes - Number(user.created_at.slice(0, 2) * 60) + Number(user.created_at.slice(3, 5)) + " min ago"
+                        ?modifiedBefore + " min ago"
+                        :createdBefore  + " min ago"
                     }</div>
                 </div>
                 </div>`;

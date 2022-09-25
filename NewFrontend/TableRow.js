@@ -7,10 +7,10 @@ const TableRow = (user,index) => {
         <div class="col-1 ">
             ${user.nic}
         </div>
-        <div class="col-2 fixed-lines pe-1">
+        <div class="col-2 pe-1 fixed-lines-1" title="${user.fullName}">
             ${user.fullName}
         </div>
-        <div class="col-2  fixed-lines">
+        <div class="col-2 fixed-lines-1" title="${user.address}">
             ${user.address}
         </div>
         <div class="col-1 text-center ">

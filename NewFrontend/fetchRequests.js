@@ -33,7 +33,7 @@ const setUserCount = (element) => {
         }`;
         genderChart.config.data.datasets[0].data = setGenderGraph();
         nationaltyChart.config.data.datasets[0].data = setNationaltyGraph();
-        myChart.config.data.datasets[0].data = setAgeGroupGraph();
+        setAgeGroupGraph();
         genderChart.update();
         nationaltyChart.update();
         myChart.update();
@@ -140,36 +140,31 @@ const setNationaltyGraph = () => {
 };
 
 const setAgeGroupGraph = () => {
-  let age18To30 = 0;
-  let age30To40 = 0;
-  let age40To50 = 0;
-  let age50To60 = 0;
-  let age60To70 = 0;
-  let age70To80 = 0;
+ 
+  requestBody.requestId = (Math.random() * 10000).toFixed(0);
+  requestBody.requestDate = new Date().toLocaleString();
+  requestBody.action = "getAgeGroupGraph";
+  requestBody.actionPerformedBy = "Lasith";
 
-  //map the users and get their birthday
-  //tap into their age by calculating the birthday
+  fetch("http://localhost:8080/RestAPI/NICValidator/user", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.responseCode === 1) {
+       myChart.config.data.datasets[0].data = data.yAxis;
+       myChart.config.data.labels = data.xAxis;
+       myChart.update();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 
-  allUsers.map((user) => {
-    let currentYear = new Date().getFullYear();
-    let age = currentYear - new Date(user.dob).getFullYear();
-
-    if (age > 70) {
-      age70To80++;
-    } else if (age > 60) {
-      age60To70++;
-    } else if (age > 50) {
-      age50To60++;
-    } else if (age > 40) {
-      age40To50++;
-    } else if (age > 30) {
-      age30To40++;
-    } else {
-      age18To30++;
-    }
-  });
-
-  return [age18To30, age30To40, age40To50, age50To60, age60To70, age70To80];
 };
 
 const setRecentActivities = (element) => {

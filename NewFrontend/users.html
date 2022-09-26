@@ -396,11 +396,6 @@
         let end = 0;
         const paginationContent = document.getElementById("paginationContent");
         let paginationBtns = "";
-
-        // for (let i = 0; i < noOfPages; i++) {
-        //   contentHtml += `<span  role="button" onclick="setTableRows(${i * rowsPerPage})" id="pg-${i}" class="mx-3 fw-bold notselected-page pg-btn text-primary  ">${i + 1}</span>`;
-        // }
-
         paginationContent.innerHTML = pagination(userCount, rowsPerPage, btnOffset);
         return btnOffset + 1;
       };

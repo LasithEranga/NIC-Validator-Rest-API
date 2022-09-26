@@ -8,9 +8,11 @@ package lk.kln.mit.restapi.model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -41,7 +43,7 @@ public class User {
     private String future_column_2 = null;
     private String future_column_3 = null;
 
-    private static final String FIND_ALL = "SELECT * FROM user WHERE state=1";
+    private static final String FIND_ALL = "SELECT * FROM user WHERE state=1 ORDER BY modified_at DESC;";
     private static final String GET_COUNT = "SELECT COUNT(*) as count FROM user WHERE state=1";
     private static final String FIND_ONE = "SELECT * FROM user WHERE id = ? AND state=1";
     private static final String USER_REGISTRATION_COUNT = "SELECT COUNT(*) as count FROM user WHERE state=1 AND created_on >= DATE_SUB(CURDATE(), INTERVAL ? DAY); ";
@@ -52,8 +54,8 @@ public class User {
     private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 , `modified_on`= CAST(now() as Date) , `modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String RECENT_ACTIVITIES = "SELECT * FROM `user` WHERE (`created_on` > Now() - INTERVAL 1 Day AND `created_at` > Now() - INTERVAL 1 Hour) OR (`modified_on`> Now() - INTERVAL 1 Day AND `modified_at` > Now() - INTERVAL 1 Hour) ORDER BY COALESCE(`modified_at`, `created_at`) DESC LIMIT 3;";
-    private static final String SET_OF_USERS = "SELECT * FROM `user` WHERE state=1 LIMIT ? , ? ; ";
-
+    private static final String SET_OF_USERS = "SELECT * FROM `user` WHERE state=1 ORDER BY modified_at DESC LIMIT ? OFFSET ? ;";
+    private static final String AGE_GROUP_GRAPH = "SELECT SUM(CASE WHEN (year(curdate())-year(dob)) >18 AND (year(curdate())-year(dob))< 30 THEN 1 else 0 END) as `18-30`, SUM(CASE WHEN (year(curdate())-year(dob)) >30 AND (year(curdate())-year(dob))< 40 THEN 1 else 0 END) as `30-40`, SUM(CASE WHEN (year(curdate())-year(dob)) >40 AND (year(curdate())-year(dob))< 50 THEN 1 else 0 END) as `40-50`, SUM(CASE WHEN (year(curdate())-year(dob)) >50 AND (year(curdate())-year(dob))< 60 THEN 1 else 0 END) as `50-60`, SUM(CASE WHEN (year(curdate())-year(dob)) >=60 AND (year(curdate())-year(dob))<70 THEN 1 else 0 END) as `60-70`, SUM(CASE WHEN (year(curdate())-year(dob)) >= 70 THEN 1 else 0 END) as `70+` FROM user WHERE state = 1; ";
     public User() {
 
     }
@@ -155,7 +157,6 @@ public class User {
         try (Connection conn = Database.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(USER_REGISTRATION_COUNT);
             statement.setInt(1, noOfDays);
-            System.out.println(statement);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt("count");
@@ -183,7 +184,6 @@ public class User {
             }
 
             statement.setInt(2, noOfDays);
-            System.out.println(statement);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt("count");
@@ -198,15 +198,15 @@ public class User {
 
     }
 
-    public static List<User> getSetOfUsers(int start, int end) {
+    public static List<User> getSetOfUsers(int limit, int offset) {
 
         List<User> users = new ArrayList();
         User user;
         ResultSet resultSet;
         try (Connection conn = Database.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(SET_OF_USERS);
-            statement.setInt(1, start);            
-            statement.setInt(2, end);
+            statement.setInt(1, limit);            
+            statement.setInt(2, offset);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 user = new User(
@@ -248,7 +248,6 @@ public class User {
             PreparedStatement statement = conn.prepareStatement(RECENT_ACTIVITIES);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                System.out.println(resultSet.getString("full_name"));
                 user = new User(
                         resultSet.getInt("id"),
                         resultSet.getString("nic"),
@@ -361,7 +360,6 @@ public class User {
                 || address == null || created_by == null) {
             return 2;
         }
-        System.out.println(dob);
 
         try (Connection conn = Database.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(CREATE_USER);
@@ -558,8 +556,25 @@ public class User {
         }
     }
 
-    public boolean checkNullFields() throws IllegalArgumentException, IllegalAccessException {
+    public static Map<String,Integer> getAgeGroupGraph (){
+        
+        Map<String, Integer> map = new LinkedHashMap<>();
+        
+        try(Connection conn = Database.getConnection()){
+            PreparedStatement statement = conn.prepareStatement(AGE_GROUP_GRAPH);
+            ResultSet resultSet =  statement.executeQuery();
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            int columnCount = resultSetMetaData.getColumnCount();
 
-        return false;
+            while(resultSet.next()){
+                for (int column = 1; column <= columnCount; column++){
+                    map.put(resultSetMetaData.getColumnName(column), resultSet.getInt(resultSetMetaData.getColumnName(column)));
+                }
+            }
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return map;
     }
 }

@@ -6,10 +6,12 @@
 package lk.kln.mit.restapi.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Context;
@@ -47,9 +49,10 @@ public class UserController {
     private static final String COUNT_USERS_FILTERED = "filteredResult";
     private static final String COUNT_ACTIVITIES = "getActivities";
     private static final String GET_RECENT_ACTIVITIES = "getRecentActivities";
+    private static final String GET_AGE_GROUP_GRAPH = "getAgeGroupGraph";
 
     //RESPONSE TEMPLATE
-    private static final String RESPONSE_TEMPLATE = "{'responseCode':%d,'message':%s,'requestId':'%s','users':%s}";
+    private static final String RESPONSE_TEMPLATE = "{'responseCode':%d,'message':%s,'requestId':'%s','%s':%s";
 
     @Context
     private UriInfo context;
@@ -92,10 +95,10 @@ public class UserController {
                     List<User> users = User.find();
                     if (users.isEmpty()) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "[]");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "users", "[]");
 
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(users));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", new Gson().toJson(users));
                     }
                     break;
 
@@ -103,9 +106,9 @@ public class UserController {
 
                     User foundUser = user.getUser();
                     if (foundUser == null) {
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"User not found\"", requestId, "[]");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"User not found\"", requestId, "users", "[]");
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(foundUser));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", "users", requestId, new Gson().toJson(foundUser));
                     }
                     break;
 
@@ -114,25 +117,25 @@ public class UserController {
                     int noOfUsers = User.getNoOfUsers();
                     if (noOfUsers == 0) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "0");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", "userCount", requestId, "0");
 
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfUsers));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", "userCount", requestId, Integer.toString(noOfUsers));
                     }
                     break;
 
                 case GET_SETOF_USERS:
-                    String start = jsonObject.get("start").toString();
-                    String end = jsonObject.get("end").toString();
-                    start = start.replace("\"", "");
-                    end = end.replace("\"", "");
-                    List<User> usersSet = User.getSetOfUsers(Integer.parseInt(start), Integer.parseInt(end));
+                    String limit = jsonObject.get("limit").toString();
+                    String offset = jsonObject.get("offset").toString();
+                    limit = limit.replace("\"", "");
+                    offset = offset.replace("\"", "");
+                    List<User> usersSet = User.getSetOfUsers(Integer.parseInt(limit), Integer.parseInt(offset));
                     if (usersSet.isEmpty()) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "0");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "users", "0");
 
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(usersSet));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", new Gson().toJson(usersSet));
                     }
                     break;
 
@@ -144,10 +147,10 @@ public class UserController {
                     noOfFilteredUsers = User.getUserRegistrationCount(days);
                     if (noOfFilteredUsers == -1) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "0");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "users", "0");
 
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfFilteredUsers));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", Integer.toString(noOfFilteredUsers));
                     }
                     break;
 
@@ -161,10 +164,10 @@ public class UserController {
                     noOfFilteredUsers = User.getActivityCount(days, activity);
                     if (noOfFilteredUsers == -1) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No result found\"", requestId, "0");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "0");
 
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, Integer.toString(noOfFilteredUsers));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", Integer.toString(noOfFilteredUsers));
                     }
                     break;
 
@@ -173,10 +176,38 @@ public class UserController {
                     List<User> usersActivity = User.getRecentActivities();
                     if (usersActivity.isEmpty()) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", requestId, "[]");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "[]");
 
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, new Gson().toJson(usersActivity));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", new Gson().toJson(usersActivity));
+                    }
+                    break;
+
+                case GET_AGE_GROUP_GRAPH:
+
+                    Map<String, Integer> map = User.getAgeGroupGraph();
+
+                    if (map.isEmpty()) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "[]");
+
+                    } else {
+                        JsonElement jsonElement = null;
+                        JsonObject jObject = null;
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", "[]");
+//                        jsonElement = JsonParser.parseString();
+//                        jsonObject = jsonElement.getAsJsonObject();
+                        JsonArray xAxis = new JsonArray();
+                        for (String key : map.keySet()) {
+                            xAxis.add(key);
+                        }
+                        
+                         JsonArray yAxis = new JsonArray();
+                        for (int value : map.values()) {
+                            yAxis.add(value);
+                        }
+                        //System.out.println(xAxis);
+                        response += String.format(",'xAxis':%s,'yAxis':%s", new Gson().toJson(xAxis),new Gson().toJson(yAxis));
                     }
                     break;
 
@@ -184,16 +215,16 @@ public class UserController {
 
                     switch (user.save()) {
                         case 1:
-                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details saved.\"", requestId, new Gson().toJson(user.getUser()));
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details saved.\"", requestId, "users", new Gson().toJson(user.getUser()));
                             break;
                         case 2:
-                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please send all parameters\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please send all parameters\"", requestId, "users", "[]");
                             break;
                         case 4:
-                            response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "users", "[]");
                             break;
                         default:
-                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not save user details\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not save user details\"", requestId, "users", "[]");
                             break;
                     }
 
@@ -206,13 +237,13 @@ public class UserController {
                             response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details updated\"", requestId, new Gson().toJson(user.getUser()));
                             break;
                         case 2:
-                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please inclue all required parameters\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please inclue all required parameters\"", requestId, "users", "[]");
                             break;
                         case 4:
-                            response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "users", "[]");
                             break;
                         default:
-                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not update the user\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not update the user\"", requestId, "users", "[]");
                             break;
                     }
 
@@ -222,13 +253,13 @@ public class UserController {
 
                     switch (user.remove()) {
                         case 1:
-                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details removed\"", requestId, new Gson().toJson(user));
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details removed\"", requestId, "users", new Gson().toJson(user));
                             break;
                         case 2:
-                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters, please include the unique id of the user\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters, please include the unique id of the user\"", requestId, "users", "[]");
                             break;
                         default:
-                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not delete the user\"", requestId, "[]");
+                            response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not delete the user\"", requestId, "users", "[]");
                             break;
                     }
 
@@ -236,23 +267,23 @@ public class UserController {
 
                 default:
 
-                    response = String.format(RESPONSE_TEMPLATE, METHOD_NOT_FOUND, "\"Invalid operation\"", requestId, "[]");
+                    response = String.format(RESPONSE_TEMPLATE, METHOD_NOT_FOUND, "\"Operation not found\"", requestId, "users", "[]");
 
             }
 
-            JsonElement responseElement = JsonParser.parseString(response);
+            JsonElement responseElement = JsonParser.parseString(response + "}");
             JsonObject responseObject = responseElement.getAsJsonObject();
             return new Gson().toJson(responseObject);
 
         } catch (JsonSyntaxException e) {
             //if json parsing failed
-            JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Malformed JSON object\"", "Failed to retrive", "[]"));
+            JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Malformed JSON object\"", "Failed to retrive", "users", "[]"));
             JsonObject responseObject = responseElement.getAsJsonObject();
             return new Gson().toJson(responseObject);
 
         } catch (Exception e) {
 
-            JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, FAILED, "\"An error occured from server side\"", "Failed to retrive", "[]"));
+            JsonElement responseElement = JsonParser.parseString(String.format(RESPONSE_TEMPLATE, FAILED, "\"An error occured from server side\"", "Failed to retrive", "users", "[]"));
             JsonObject responseObject = responseElement.getAsJsonObject();
             return new Gson().toJson(responseObject);
 

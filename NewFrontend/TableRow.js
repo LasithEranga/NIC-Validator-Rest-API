@@ -28,7 +28,7 @@ const TableRow = (user,index) => {
         <div class="col-2 text-nowrap text-center">
             ${user.modified_at ? user.modified_on + " " + user.modified_at : user.created_on + " " + user.created_at}
         </div>
-        <div class="col d-flex">
+        <div class="col d-flex pe-2">
         <span role="button" class="text-success" onclick="updateUserClickHandler(${user.id})" > edit </span>
         <span role="button" class="px-1" > / </span>
         <span role="button" class="text-danger" onClick="openDeleteWarning('${user.id}')"> delete </span>

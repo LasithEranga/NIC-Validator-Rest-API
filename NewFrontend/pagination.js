@@ -1,12 +1,12 @@
-const pagination = (noOfRows, rowsPerPage , offset = 0) => {
+const pagination = (noOfPages, rowsPerPage, offset = 0) => {
   let contentHtml = "";
   let btnArray = [];
-  let noOfPages = (noOfRows / rowsPerPage).toFixed(0);
+  // let noOfPages = (noOfRows / rowsPerPage).toFixed(0);
   // if (noOfRows % rowsPerPage > 0) {
   //   noOfPages++;
   // }
-  let start = 0;
-  let end = 0;
+  // let start = 0;
+  // let end = 0;
 
   //create the array of elemets that contains the buttons
   for (let i = 0; i < noOfPages; i++) {
@@ -15,16 +15,16 @@ const pagination = (noOfRows, rowsPerPage , offset = 0) => {
 
   //  check no of pages
   if (noOfPages > 3) {
-    if ((offset+1) === btnArray.length - 1) {
-      contentHtml += btnArray[offset] + btnArray[offset+1];
-    }else{
-      contentHtml += btnArray[offset] + btnArray[offset+1] + "..." + btnArray[btnArray.length - 1];
+    if (offset + 1 === btnArray.length - 1) {
+      contentHtml += btnArray[offset] + btnArray[offset + 1];
+    } else {
+      contentHtml += btnArray[offset] + btnArray[offset + 1] + "..." + btnArray[btnArray.length - 1];
     }
   } else {
     btnArray.map((btn) => {
       contentHtml += btn;
     });
   }
- 
+
   return contentHtml;
 };

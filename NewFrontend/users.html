@@ -359,7 +359,7 @@
           btns[k].classList.remove("selected-page");
         }
 
-        document.getElementById(`pg-${offset / rowsPerPage}`)? document.getElementById(`pg-${offset / rowsPerPage}`).classList.add("selected-page"):"";
+        document.getElementById(`pg-${offset / rowsPerPage}`) ? document.getElementById(`pg-${offset / rowsPerPage}`).classList.add("selected-page") : "";
 
         fetch("http://localhost:8080/RestAPI/NICValidator/user", {
           method: "POST",
@@ -373,21 +373,19 @@
             if (data.responseCode === 1) {
               let usersSet = data.users;
               let contentHtml = "";
-              if(usersSet.length > 0){
+              if (usersSet.length > 0) {
                 usersSet
-                ? usersSet.map((user, index) => {
-                    contentHtml += TableRow(user, offset + 1 + index);
-                    paginatedUserCount.innerHTML = `Showing ${offset + 1} - ${offset + usersSet.length}  of ${users.length} Users`;
-                  })
-                : "";
+                  ? usersSet.map((user, index) => {
+                      contentHtml += TableRow(user, offset + 1 + index);
+                      paginatedUserCount.innerHTML = `Showing ${offset + 1} - ${offset + usersSet.length}  of ${users.length} Users`;
+                    })
+                  : "";
                 content.innerHTML = contentHtml;
-              }else{
+              } else {
                 content.innerHTML = "<div class='text-center mt-3 amaranath bg-table'>No users found</div>";
               }
-             
-            }else{
+            } else {
               content.innerHTML = `<div class='text-center pt-3  pb-3 amaranath bg-table'><i class="fa-solid fa-triangle-exclamation me-2"></i>An error occured while fetching data</div>`;
-
             }
           })
           .catch((error) => {
@@ -397,31 +395,27 @@
 
       const setPagination = () => {
         userCount = users.length;
-        let contentHtml = "";
         noOfPages = (userCount / rowsPerPage).toFixed(0);
-        console.log(noOfPages)
-        if (userCount % rowsPerPage > 0) {
-          noOfPages++;
-        }
-
-        let start = 0;
-        let end = 0;
+        console.log(noOfPages);
+        // if (userCount % rowsPerPage > 0) {
+        //   noOfPages++;
+        // }
         const paginationContent = document.getElementById("paginationContent");
-        let paginationBtns = "";
-        paginationContent.innerHTML = pagination(userCount, rowsPerPage, btnOffset);
+        paginationContent.innerHTML = pagination(noOfPages, rowsPerPage, btnOffset);
         return btnOffset + 1;
       };
 
       const paginationForwardClickHandler = () => {
         btnOffset++;
-
-        setPagination();
+        if (btnOffset < noOfPages - 1) {
+          setPagination();
+        }
         document.getElementById(`pg-${btnOffset}`).click();
         backBtn.setAttribute("onclick", "paginationBackClickHandler()");
         backBtn.classList.add("bg-primary");
         backBtn.classList.remove("bg-secondary");
 
-        if (noOfPages - 3 === btnOffset) {
+        if (noOfPages - 1 === btnOffset) {
           forwardBtn.setAttribute("onclick", "");
           forwardBtn.classList.remove("bg-primary");
           forwardBtn.classList.add("bg-secondary");

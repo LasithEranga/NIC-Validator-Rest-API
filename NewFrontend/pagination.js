@@ -2,9 +2,9 @@ const pagination = (noOfRows, rowsPerPage , offset = 0) => {
   let contentHtml = "";
   let btnArray = [];
   let noOfPages = (noOfRows / rowsPerPage).toFixed(0);
-  if (noOfRows % rowsPerPage > 0) {
-    noOfPages++;
-  }
+  // if (noOfRows % rowsPerPage > 0) {
+  //   noOfPages++;
+  // }
   let start = 0;
   let end = 0;
 
@@ -18,7 +18,7 @@ const pagination = (noOfRows, rowsPerPage , offset = 0) => {
     if ((offset+1) === btnArray.length - 1) {
       contentHtml += btnArray[offset] + btnArray[offset+1];
     }else{
-        contentHtml += btnArray[offset] + btnArray[offset+1] + "..." + btnArray[btnArray.length - 1];
+      contentHtml += btnArray[offset] + btnArray[offset+1] + "..." + btnArray[btnArray.length - 1];
     }
   } else {
     btnArray.map((btn) => {

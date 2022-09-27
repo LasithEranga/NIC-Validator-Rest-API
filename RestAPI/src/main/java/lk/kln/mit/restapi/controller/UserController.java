@@ -111,7 +111,7 @@ public class UserController {
                     if (foundUser == null) {
                         response = String.format(RESPONSE_TEMPLATE, FAILED, "\"User not found\"", requestId, "users", "[]");
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", "users", requestId, new Gson().toJson(foundUser));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId,"users", new Gson().toJson(foundUser));
                     }
                     break;
 
@@ -120,10 +120,10 @@ public class UserController {
                     int noOfUsers = User.getNoOfUsers();
                     if (noOfUsers == 0) {
 
-                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"", "userCount", requestId, "0");
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No users found\"",  requestId,"userCount", "0");
 
                     } else {
-                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", "userCount", requestId, Integer.toString(noOfUsers));
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"",  requestId, "userCount",Integer.toString(noOfUsers));
                     }
                     break;
 
@@ -298,7 +298,7 @@ public class UserController {
 
                     switch (user.update()) {
                         case 1:
-                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details updated\"", requestId, new Gson().toJson(user.getUser()));
+                            response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"User details updated\"", requestId,"users", new Gson().toJson(user.getUser()));
                             break;
                         case 2:
                             response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Missing parameters. Please inclue all required parameters\"", requestId, "users", "[]");

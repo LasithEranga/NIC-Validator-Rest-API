@@ -116,15 +116,16 @@
 
         <div class="ps-4 mt-3">
           <div class="d-flex py-3 bg-table rounded-0 ps-3 me-5 amarnath text-center">
-            <div class="px-3">No</div>
+            <div class="col">No</div>
             <div class="col-1">NIC Number</div>
-            <div class="col-2">Name</div>
-            <div class="col-2">Address</div>
+            <div class="col-2 text-start ps-3">Name</div>
+            <div class="col-2 text-start ps-3">Address</div>
             <div class="col-1">Birthday</div>
+            <div class="col-1">Age</div>
             <div class="col-1">Nationality</div>
-            <div class="col-1">Gender</div>
+            <div class="col">Gender</div>
             <div class="col-2">Last modified</div>
-            <div class="col text-center pe-3">Actions</div>
+            <div class="col pe-3">Actions</div>
           </div>
 
           <div class="tb-body me-5 table-height" id="content"></div>
@@ -358,7 +359,7 @@
           btns[k].classList.remove("selected-page");
         }
 
-        document.getElementById(`pg-${offset / rowsPerPage}`).classList.add("selected-page");
+        document.getElementById(`pg-${offset / rowsPerPage}`)? document.getElementById(`pg-${offset / rowsPerPage}`).classList.add("selected-page"):"";
 
         fetch("http://localhost:8080/RestAPI/NICValidator/user", {
           method: "POST",
@@ -369,15 +370,25 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            let usersSet = data.users;
-            let contentHtml = "";
-            usersSet
-              ? usersSet.map((user, index) => {
-                  contentHtml += TableRow(user, offset + 1 + index);
-                  paginatedUserCount.innerHTML = `Showing ${offset + 1} - ${offset + usersSet.length}  of ${users.length} Users`;
-                })
-              : "";
-            content.innerHTML = contentHtml;
+            if (data.responseCode === 1) {
+              let usersSet = data.users;
+              let contentHtml = "";
+              if(usersSet.length > 0){
+                usersSet
+                ? usersSet.map((user, index) => {
+                    contentHtml += TableRow(user, offset + 1 + index);
+                    paginatedUserCount.innerHTML = `Showing ${offset + 1} - ${offset + usersSet.length}  of ${users.length} Users`;
+                  })
+                : "";
+                content.innerHTML = contentHtml;
+              }else{
+                content.innerHTML = "<div class='text-center mt-3 amaranath bg-table'>No users found</div>";
+              }
+             
+            }else{
+              content.innerHTML = `<div class='text-center pt-3  pb-3 amaranath bg-table'><i class="fa-solid fa-triangle-exclamation me-2"></i>An error occured while fetching data</div>`;
+
+            }
           })
           .catch((error) => {
             console.log(error);
@@ -385,9 +396,10 @@
       };
 
       const setPagination = () => {
-        userCount = users.length ;
+        userCount = users.length;
         let contentHtml = "";
         noOfPages = (userCount / rowsPerPage).toFixed(0);
+        console.log(noOfPages)
         if (userCount % rowsPerPage > 0) {
           noOfPages++;
         }
@@ -409,12 +421,13 @@
         backBtn.classList.add("bg-primary");
         backBtn.classList.remove("bg-secondary");
 
-        if (noOfPages - 2 === btnOffset) {
+        if (noOfPages - 3 === btnOffset) {
           forwardBtn.setAttribute("onclick", "");
           forwardBtn.classList.remove("bg-primary");
           forwardBtn.classList.add("bg-secondary");
         }
       };
+
       const paginationBackClickHandler = () => {
         btnOffset--;
 

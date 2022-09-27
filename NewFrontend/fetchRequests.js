@@ -28,9 +28,6 @@ const setUserCount = (element) => {
         allUsers = data.users;
         allUserCount = data.users.length;
         element.innerHTML = `${allUserCount}  ${allUserCount > 1 ? "Users" : "User"}`;
-        setGenderGraph();
-        setNationaltyGraph();
-        setAgeGroupGraph();
         genderChart.update();
         nationaltyChart.update();
         myChart.update();
@@ -116,6 +113,8 @@ const setGenderGraph = () => {
         genderChart.config.data.labels = data.xAxis;
         genderChart.config.data.datasets[0].data = data.yAxis;
         genderChart.update();
+      } else {
+        loadingAnimationGenderChart.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-2"></i>Error fetching data`;
       }
     })
     .catch((error) => {
@@ -143,12 +142,13 @@ const setNationaltyGraph = () => {
         nationaltyChart.config.data.labels = data.xAxis;
         nationaltyChart.config.data.datasets[0].data = data.yAxis;
         nationaltyChart.update();
+      } else {
+        loadingAnimationPieChart.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-2"></i>Error fetching data`;
       }
     })
     .catch((error) => {
       console.log(error);
     });
-
 };
 
 const setAgeGroupGraph = () => {
@@ -167,10 +167,12 @@ const setAgeGroupGraph = () => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-        loadingAnimationBarGraph.style.display="none";
+        loadingAnimationBarGraph.style.display = "none";
         myChart.config.data.datasets[0].data = data.yAxis;
         myChart.config.data.labels = data.xAxis;
         myChart.update();
+      } else {
+        loadingAnimationBarGraph.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-2"></i>Error fetching data`;
       }
     })
     .catch((error) => {
@@ -197,7 +199,6 @@ const setRecentActivities = (element) => {
     .then((data) => {
       if (data.responseCode === 1) {
         let activities = data.users;
-
         activities.map((user) => {
           let timeNowHours = new Date().toLocaleTimeString("en-US", { hour12: false }).slice(0, 2);
           let timeNowMiniutes = new Date().toLocaleTimeString("en-US", { hour12: false }).slice(3, 5);
@@ -206,7 +207,6 @@ const setRecentActivities = (element) => {
           let modifiedBefore = user.modified_at ? timeInMinutes - (Number(user.modified_at.slice(0, 2) * 60) + Number(user.modified_at.slice(3, 5))) : "";
           let createdBefore = timeInMinutes - (Number(user.created_at.slice(0, 2) * 60) + Number(user.created_at.slice(3, 5)));
 
-          console.log(modifiedBefore);
           template += `
                 <div class="d-flex col-11 my-2">
                 <div class="">
@@ -222,9 +222,16 @@ const setRecentActivities = (element) => {
         });
 
         element.innerHTML = template;
+      } else {
+        console.log("here");
+        element.innerHTML = `<div class="p-3 amarnath text-center border border-1 mt-3">No recent activities occured during last hour</div>`;
       }
     })
     .catch((error) => {
       console.log(error);
     });
 };
+
+setGenderGraph();
+setNationaltyGraph();
+setAgeGroupGraph();

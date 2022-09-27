@@ -197,8 +197,13 @@
           </div>
 
           <div class="pt-3 col-8 pe-2">
-            <div class="bg-white shadow-sm chart w-100 rounded-2 p-2">
-              <canvas id="myChart" class="col-12" height="300"></canvas>
+            <div class="bg-white shadow-sm chart w-100 rounded-2 p-2 position-relative">
+              
+              <div id="loadingAnimationBarGraph" class="position-absolute top-50" style="left: 50%;"><span class="spinner-border spinner-border-sm me-3" ></span>Loading... </div>
+
+              <canvas id="myChart" class="col-12" height="300">
+              </canvas>
+
             </div>
           </div>
         </div>
@@ -223,13 +228,17 @@
             </div>
           </div>
 
-          <div class="p-3 pb-0 pt-0">
-            <span class="amarnath">Nationalty</span>
+          <div class="p-3 pb-0 pt-0 position-relative">
+            <span class="amarnath">Nationalty   <div id="loadingAnimationPieChart" class="position-absolute top-50" style="left: 100px;"><span class="spinner-border spinner-border-sm me-3" ></span>Loading... </div>
+          </span>
+            
             <canvas id="nationaltyChart" class="col-10" height="150"></canvas>
           </div>
 
-          <div class="p-3 pe-4 me-3 pb-0 pt-0">
-            <span class="amarnath">Gender</span>
+          <div class="p-3 pe-4 me-3 pb-0 pt-0 position-relative">
+            <span class="amarnath">Gender   
+          </span>
+          <div id="loadingAnimationGenderChart" class="position-absolute top-50" style="left: 100px;"><span class="spinner-border spinner-border-sm me-3" ></span>Loading... </div>
             <canvas id="genderChart" class="col-10" height="150"></canvas>
           </div>
 
@@ -264,6 +273,11 @@
       const deletePercentage = document.getElementById("deletePercentage");
 
       const recentActivities = document.getElementById("recentActivities");
+      const loadingAnimationBarGraph = document.getElementById("loadingAnimationBarGraph");
+      const loadingAnimationPieChart = document.getElementById("loadingAnimationPieChart");
+
+      const loadingAnimationGenderChart = document.getElementById("loadingAnimationGenderChart");
+
 
       
       //setting card values
@@ -275,7 +289,7 @@
     
       setRecentActivities(recentActivities);
 
-      const labels = ["18-30", "30-40", "40-50", "50-60", "60-70", "70 +"];
+      const labels = [];
 
       const data = {
         labels: labels,
@@ -308,7 +322,7 @@
       const myChart = new Chart(ctx, config);
 
       const nationaltyData = {
-        labels: ["Sinhalease", "Hindu", "Islamic"],
+        labels: [],
         datasets: [
           {
             label: "My First dataset",
@@ -349,7 +363,7 @@
       );
 
       const genderData = {
-        labels: ["Male", "Female"],
+        labels: [],
         datasets: [
           {
             label: "Gender",

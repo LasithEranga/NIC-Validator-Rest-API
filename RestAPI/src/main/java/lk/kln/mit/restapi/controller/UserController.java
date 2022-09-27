@@ -49,7 +49,10 @@ public class UserController {
     private static final String COUNT_USERS_FILTERED = "filteredResult";
     private static final String COUNT_ACTIVITIES = "getActivities";
     private static final String GET_RECENT_ACTIVITIES = "getRecentActivities";
-    private static final String GET_AGE_GROUP_GRAPH = "getAgeGroupGraph";
+    private static final String GET_AGE_GROUP_GRAPH = "getAgeGroupGraph";    
+    private static final String GET_NATIONALTY_COUNT = "getNationaltyCount";
+    private static final String GET_GENDER_COUNT = "getGenderCount";
+
 
     //RESPONSE TEMPLATE
     private static final String RESPONSE_TEMPLATE = "{'responseCode':%d,'message':%s,'requestId':'%s','%s':%s";
@@ -182,6 +185,8 @@ public class UserController {
                         response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", new Gson().toJson(usersActivity));
                     }
                     break;
+                
+                    
 
                 case GET_AGE_GROUP_GRAPH:
 
@@ -210,6 +215,65 @@ public class UserController {
                         response += String.format(",'xAxis':%s,'yAxis':%s", new Gson().toJson(xAxis),new Gson().toJson(yAxis));
                     }
                     break;
+                    
+                case GET_GENDER_COUNT:
+
+                    Map<String, Integer> genderMap = User.getGnderCount();
+
+                    if (genderMap.isEmpty()) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "[]");
+
+                    } else {
+                        JsonElement jsonElement = null;
+                        JsonObject jObject = null;
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", "[]");
+//                        jsonElement = JsonParser.parseString();
+//                        jsonObject = jsonElement.getAsJsonObject();
+                        JsonArray xAxis = new JsonArray();
+                        for (String key : genderMap.keySet()) {
+                            xAxis.add(key);
+                        }
+                        
+                         JsonArray yAxis = new JsonArray();
+                        for (int value : genderMap.values()) {
+                            yAxis.add(value);
+                        }
+                        //System.out.println(xAxis);
+                        response += String.format(",'xAxis':%s,'yAxis':%s", new Gson().toJson(xAxis),new Gson().toJson(yAxis));
+                    }
+                    break;
+                    
+                    
+                case GET_NATIONALTY_COUNT:
+
+                    Map<String, Integer> nationalityMap = User.getNationalityCount();
+
+                    if (nationalityMap.isEmpty()) {
+
+                        response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "[]");
+
+                    } else {
+                        JsonElement jsonElement = null;
+                        JsonObject jObject = null;
+                        response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", "[]");
+//                        jsonElement = JsonParser.parseString();
+//                        jsonObject = jsonElement.getAsJsonObject();
+                        JsonArray xAxis = new JsonArray();
+                        for (String key : nationalityMap.keySet()) {
+                            xAxis.add(key);
+                        }
+                        
+                         JsonArray yAxis = new JsonArray();
+                        for (int value : nationalityMap.values()) {
+                            yAxis.add(value);
+                        }
+                        //System.out.println(xAxis);
+                        response += String.format(",'xAxis':%s,'yAxis':%s", new Gson().toJson(xAxis),new Gson().toJson(yAxis));
+                    }
+                    break;
+                    
+                    
 
                 case INSERT_USER:
 

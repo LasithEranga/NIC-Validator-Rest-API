@@ -25,14 +25,11 @@ const setUserCount = (element) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-        
         allUsers = data.users;
         allUserCount = data.users.length;
-        element.innerHTML = `${allUserCount}  ${
-          allUserCount > 1 ? "Users" : "User"
-        }`;
-        genderChart.config.data.datasets[0].data = setGenderGraph();
-        nationaltyChart.config.data.datasets[0].data = setNationaltyGraph();
+        element.innerHTML = `${allUserCount}  ${allUserCount > 1 ? "Users" : "User"}`;
+        setGenderGraph();
+        setNationaltyGraph();
         setAgeGroupGraph();
         genderChart.update();
         nationaltyChart.update();
@@ -64,9 +61,7 @@ const setFilteredCount = (element, interval) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-        element.innerHTML = `${data.users}  ${
-          data.users > 1 ? "Users" : "User"
-        }`;
+        element.innerHTML = `${data.users}  ${data.users > 1 ? "Users" : "User"}`;
       }
     })
     .catch((error) => {
@@ -92,13 +87,8 @@ const setActivityCount = (element, percentageElement, interval, filterBy) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-        percentageElement.innerHTML = ` + ${(
-          (data.users / allUserCount) *
-          100
-        ).toFixed(2)} %`;
-        element.innerHTML = `${
-          data.users < 10 ? "0" + data.users : data.users
-        } `;
+        percentageElement.innerHTML = ` + ${((data.users / allUserCount) * 100).toFixed(2)} %`;
+        element.innerHTML = `${data.users < 10 ? "0" + data.users : data.users} `;
       }
     })
     .catch((error) => {
@@ -107,40 +97,61 @@ const setActivityCount = (element, percentageElement, interval, filterBy) => {
 };
 
 const setGenderGraph = () => {
-  let maleCount = 0;
-  let femaleCount = 0;
+  requestBody.requestId = (Math.random() * 10000).toFixed(0);
+  requestBody.requestDate = new Date().toLocaleString();
+  requestBody.action = "getGenderCount";
+  requestBody.actionPerformedBy = "Lasith";
 
-  allUsers.map((user) => {
-    if (user.gender === "Male") {
-      maleCount++;
-    } else if (user.gender === "Female") {
-      femaleCount++;
-    }
-  });
-
-  return [maleCount, femaleCount];
+  fetch("http://localhost:8080/RestAPI/NICValidator/user", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.responseCode === 1) {
+        loadingAnimationGenderChart.style.display = "none";
+        genderChart.config.data.labels = data.xAxis;
+        genderChart.config.data.datasets[0].data = data.yAxis;
+        genderChart.update();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const setNationaltyGraph = () => {
-  let Sinhalese = 0;
-  let Hindu = 0;
-  let Islamic = 0;
+  requestBody.requestId = (Math.random() * 10000).toFixed(0);
+  requestBody.requestDate = new Date().toLocaleString();
+  requestBody.action = "getNationaltyCount";
+  requestBody.actionPerformedBy = "Lasith";
 
-  allUsers.map((user) => {
-    if (user.nationality === "Sinhalese") {
-      Sinhalese++;
-    } else if (user.nationality === "Hindu") {
-      Hindu++;
-    } else if (user.nationality === "Islamic") {
-      Islamic++;
-    }
-  });
+  fetch("http://localhost:8080/RestAPI/NICValidator/user", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.responseCode === 1) {
+        loadingAnimationPieChart.style.display = "none";
+        nationaltyChart.config.data.labels = data.xAxis;
+        nationaltyChart.config.data.datasets[0].data = data.yAxis;
+        nationaltyChart.update();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 
-  return [Sinhalese, Hindu, Islamic];
 };
 
 const setAgeGroupGraph = () => {
- 
   requestBody.requestId = (Math.random() * 10000).toFixed(0);
   requestBody.requestDate = new Date().toLocaleString();
   requestBody.action = "getAgeGroupGraph";
@@ -156,15 +167,15 @@ const setAgeGroupGraph = () => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-       myChart.config.data.datasets[0].data = data.yAxis;
-       myChart.config.data.labels = data.xAxis;
-       myChart.update();
+        loadingAnimationBarGraph.style.display="none";
+        myChart.config.data.datasets[0].data = data.yAxis;
+        myChart.config.data.labels = data.xAxis;
+        myChart.update();
       }
     })
     .catch((error) => {
       console.log(error);
     });
-
 };
 
 const setRecentActivities = (element) => {
@@ -185,18 +196,17 @@ const setRecentActivities = (element) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.responseCode === 1) {
-        
         let activities = data.users;
 
         activities.map((user) => {
-          let timeNowHours = new Date().toLocaleTimeString('en-US', {hour12: false}).slice(0,2)
-          let timeNowMiniutes = new Date().toLocaleTimeString('en-US', {hour12: false}).slice(3,5);
-          
-          let timeInMinutes = Number(timeNowHours * 60) + Number (timeNowMiniutes);
+          let timeNowHours = new Date().toLocaleTimeString("en-US", { hour12: false }).slice(0, 2);
+          let timeNowMiniutes = new Date().toLocaleTimeString("en-US", { hour12: false }).slice(3, 5);
+
+          let timeInMinutes = Number(timeNowHours * 60) + Number(timeNowMiniutes);
           let modifiedBefore = user.modified_at ? timeInMinutes - (Number(user.modified_at.slice(0, 2) * 60) + Number(user.modified_at.slice(3, 5))) : "";
-          let createdBefore = timeInMinutes - (Number(user.created_at.slice(0, 2) * 60) + Number(user.created_at.slice(3, 5)))
-          
-          console.log( modifiedBefore)
+          let createdBefore = timeInMinutes - (Number(user.created_at.slice(0, 2) * 60) + Number(user.created_at.slice(3, 5)));
+
+          console.log(modifiedBefore);
           template += `
                 <div class="d-flex col-11 my-2">
                 <div class="">
@@ -205,16 +215,8 @@ const setRecentActivities = (element) => {
                     </div>
                 </div>
                 <div class="ps-3">
-                    <div class="amarnath">${
-                      user.modified_at
-                        ? "User details updated"
-                        : "User details created"
-                    }</div>
-                    <div class="text-secondary fs-6">${
-                      user.modified_at
-                        ?modifiedBefore + " min ago"
-                        :createdBefore + " min ago"
-                    }</div>
+                    <div class="amarnath">${user.modified_at ? "User details updated" : "User details created"}</div>
+                    <div class="text-secondary fs-6">${user.modified_at ? modifiedBefore + " min ago" : createdBefore + " min ago"}</div>
                 </div>
                 </div>`;
         });

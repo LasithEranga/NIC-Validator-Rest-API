@@ -49,13 +49,15 @@ public class User {
     private static final String USER_REGISTRATION_COUNT = "SELECT COUNT(*) as count FROM user WHERE state=1 AND created_on >= DATE_SUB(CURDATE(), INTERVAL ? DAY); ";
     private static final String FILTERED_RESULT = "SELECT * FROM user WHERE state=1";
     private static final String GET_ACTIVITIES = "SELECT COUNT(*) as count FROM user WHERE state= ? AND modified_on >= (Now() - INTERVAL ? DAY); ";
-    private static final String GET_NATIONALTY_COUNT = "SELECT DISTINCT nationality as nationalty, COUNT(*) as count FROM user WHERE state = 1 GROUP BY nationality; ";
+    private static final String GET_NATIONALTY_COUNT = "SELECT SUM(CASE WHEN nationality = 'Sinhalese' THEN 1 ELSE 0 END) as `Sinhalese`,SUM(CASE WHEN nationality = 'Hindu' THEN 1 ELSE 0 END) as `Hindu`,SUM(CASE WHEN nationality = 'Islamic' THEN 1 ELSE 0 END) as `Islamic` FROM user;";
+    private static final String GET_GENDER_COUNT = "SELECT SUM(CASE WHEN gender = 'Male' THEN 1 ELSE 0 END) as `Male`,SUM(CASE WHEN gender = 'Female' THEN 1 ELSE 0 END) as `Female` FROM user WHERE state=1";
     private static final String CREATE_USER = "INSERT INTO `user`(`nic`, `full_name`, `address`, `dob`, `nationality`, `gender`, `state`, `created_by`, `created_on`, `created_at`) VALUES (?,?,?,?,?,?,1,?,CAST(now() as Date),CAST(now() as Time))";
     private static final String UPDATE_USER = "UPDATE `user` SET `nic`= ? ,`full_name`= ? ,`address`= ?,`dob`= ?,`nationality`= ?,`gender`= ?, `modified_by`= ?,`modified_on`= CAST(now() as Date),`modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String DELETE_USER = "UPDATE `user` SET `state`= 0 , `modified_on`= CAST(now() as Date) , `modified_at`= CAST(now() as Time) WHERE id = ?";
     private static final String RECENT_ACTIVITIES = "SELECT * FROM `user` WHERE (`created_on` > Now() - INTERVAL 1 Day AND `created_at` > Now() - INTERVAL 1 Hour) OR (`modified_on`> Now() - INTERVAL 1 Day AND `modified_at` > Now() - INTERVAL 1 Hour) ORDER BY COALESCE(`modified_at`, `created_at`) DESC LIMIT 3;";
     private static final String SET_OF_USERS = "SELECT * FROM `user` WHERE state=1 ORDER BY modified_at DESC LIMIT ? OFFSET ? ;";
     private static final String AGE_GROUP_GRAPH = "SELECT SUM(CASE WHEN (year(curdate())-year(dob)) >18 AND (year(curdate())-year(dob))< 30 THEN 1 else 0 END) as `18-30`, SUM(CASE WHEN (year(curdate())-year(dob)) >30 AND (year(curdate())-year(dob))< 40 THEN 1 else 0 END) as `30-40`, SUM(CASE WHEN (year(curdate())-year(dob)) >40 AND (year(curdate())-year(dob))< 50 THEN 1 else 0 END) as `40-50`, SUM(CASE WHEN (year(curdate())-year(dob)) >50 AND (year(curdate())-year(dob))< 60 THEN 1 else 0 END) as `50-60`, SUM(CASE WHEN (year(curdate())-year(dob)) >=60 AND (year(curdate())-year(dob))<70 THEN 1 else 0 END) as `60-70`, SUM(CASE WHEN (year(curdate())-year(dob)) >= 70 THEN 1 else 0 END) as `70+` FROM user WHERE state = 1; ";
+
     public User() {
 
     }
@@ -205,7 +207,7 @@ public class User {
         ResultSet resultSet;
         try (Connection conn = Database.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(SET_OF_USERS);
-            statement.setInt(1, limit);            
+            statement.setInt(1, limit);
             statement.setInt(2, offset);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -556,23 +558,67 @@ public class User {
         }
     }
 
-    public static Map<String,Integer> getAgeGroupGraph (){
-        
+    public static Map<String, Integer> getAgeGroupGraph() {
+
         Map<String, Integer> map = new LinkedHashMap<>();
-        
-        try(Connection conn = Database.getConnection()){
+
+        try (Connection conn = Database.getConnection()) {
             PreparedStatement statement = conn.prepareStatement(AGE_GROUP_GRAPH);
-            ResultSet resultSet =  statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             int columnCount = resultSetMetaData.getColumnCount();
 
-            while(resultSet.next()){
-                for (int column = 1; column <= columnCount; column++){
+            while (resultSet.next()) {
+                for (int column = 1; column <= columnCount; column++) {
                     map.put(resultSetMetaData.getColumnName(column), resultSet.getInt(resultSetMetaData.getColumnName(column)));
                 }
             }
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+    
+    public static Map<String, Integer> getNationalityCount() {
+
+        Map<String, Integer> map = new LinkedHashMap<>();
+
+        try (Connection conn = Database.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(GET_NATIONALTY_COUNT);
+            ResultSet resultSet = statement.executeQuery();
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            int columnCount = resultSetMetaData.getColumnCount();
+
+            while (resultSet.next()) {
+                for (int column = 1; column <= columnCount; column++) {
+                    map.put(resultSetMetaData.getColumnName(column), resultSet.getInt(resultSetMetaData.getColumnName(column)));
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+    
+    public static Map<String, Integer> getGnderCount() {
+
+        Map<String, Integer> map = new LinkedHashMap<>();
+
+        try (Connection conn = Database.getConnection()) {
+            PreparedStatement statement = conn.prepareStatement(GET_GENDER_COUNT);
+            ResultSet resultSet = statement.executeQuery();
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            int columnCount = resultSetMetaData.getColumnCount();
+
+            while (resultSet.next()) {
+                for (int column = 1; column <= columnCount; column++) {
+                    map.put(resultSetMetaData.getColumnName(column), resultSet.getInt(resultSetMetaData.getColumnName(column)));
+                }
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return map;

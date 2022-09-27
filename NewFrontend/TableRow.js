@@ -17,7 +17,7 @@ const TableRow = (user,index) => {
             ${user.dob}
         </div>
         <div class="col-1 text-center ">
-            ${new Date().getFullYear() - new Date(user.dob).getFullYear()} yrs
+            ${user.age} yrs
         </div>
         <div class="col-1 text-center">
             ${user.nationality}

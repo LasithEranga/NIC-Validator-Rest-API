@@ -27,10 +27,8 @@ const setUserCount = (element) => {
       if (data.responseCode === 1) {
         allUsers = data.users;
         allUserCount = data.users.length;
+        //set total user
         element.innerHTML = `${allUserCount}  ${allUserCount > 1 ? "Users" : "User"}`;
-        genderChart.update();
-        nationaltyChart.update();
-        myChart.update();
         //set activity count
         setActivityCount(updatedCount, updatePercentage, 1, "update");
         setActivityCount(deletedCount, deletePercentage, 1, "delete");
@@ -223,7 +221,6 @@ const setRecentActivities = (element) => {
 
         element.innerHTML = template;
       } else {
-        console.log("here");
         element.innerHTML = `<div class="p-3 amarnath text-center border border-1 mt-3">No recent activities occured during last hour</div>`;
       }
     })
@@ -232,6 +229,3 @@ const setRecentActivities = (element) => {
     });
 };
 
-setGenderGraph();
-setNationaltyGraph();
-setAgeGroupGraph();

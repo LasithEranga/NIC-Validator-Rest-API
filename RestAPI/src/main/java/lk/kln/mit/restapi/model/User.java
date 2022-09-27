@@ -363,13 +363,17 @@ public class User {
 
     public int save() {
 
-        // boolean isNicDobGenderValid = validateNicDobGender(user.getNic(),
-        // user.getDob().toString(), user.getGender());
-        // boolean isNameValid = validName(user.getFullName());
-        // boolean isAddressValid = validAddress(user.getAddress());
         if (nic == null || fullName == null || nationality == null || gender == null || dob == null
                 || address == null || created_by == null) {
             return 2;
+        }
+
+        boolean isNicDobGenderValid = validateNicDobGender(nic, dob, gender);
+        boolean isNameValid = validName(fullName);
+        boolean isAddressValid = validAddress(address);
+        System.out.println(isAddressValid);
+        if (!isAddressValid || !isNicDobGenderValid || !isNameValid) {
+            return 5;
         }
 
         try (Connection conn = Database.getConnection()) {
@@ -394,13 +398,16 @@ public class User {
     }
 
     public int update() {
-        // boolean isNicDobGenderValid = validateNicDobGender(user.getNic(),
-        // user.getDob().toString(), user.getGender());
-        // boolean isNameValid = validName(user.getFullName());
-        // boolean isAddressValid = validAddress(user.getAddress());
 
         if (id == -1 || nic == null || fullName == null || nationality == null || gender == null || dob == null || address == null || modified_by == null) {
             return 2;
+        }
+        boolean isNicDobGenderValid = validateNicDobGender(nic, dob, gender);
+        boolean isNameValid = validName(fullName);
+        boolean isAddressValid = validAddress(address);
+        System.out.println(isAddressValid);
+        if (!isAddressValid || !isNicDobGenderValid || !isNameValid) {
+            return 5;
         }
 
         try (Connection conn = Database.getConnection()) {
@@ -527,12 +534,17 @@ public class User {
                 date = monthDate;
                 String yearStr = Integer.toString(year);
                 String monthStr = Integer.toString(month);
+                String dateStr = Integer.toString(date);
+
                 if (monthStr.length() != 2) {
                     monthStr = "0" + monthStr;
                 }
-                String dateStr = Integer.toString(date);
+                if (dateStr.length() != 2) {
+                    dateStr = "0" + dateStr;
+                }
                 String generatedDob = yearStr + "-" + monthStr + "-" + dateStr;
                 // compare submitted values and return
+                System.out.println(generatedDob);
                 if (submittedDob.equals(generatedDob) && submittedGender.equals(gender)) {
                     return true;
                 } else {

@@ -11,7 +11,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Context;
@@ -197,11 +196,7 @@ public class UserController {
                         response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "[]");
 
                     } else {
-                        JsonElement jsonElement = null;
-                        JsonObject jObject = null;
                         response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", "[]");
-//                        jsonElement = JsonParser.parseString();
-//                        jsonObject = jsonElement.getAsJsonObject();
                         JsonArray xAxis = new JsonArray();
                         for (String key : map.keySet()) {
                             xAxis.add(key);
@@ -211,7 +206,6 @@ public class UserController {
                         for (int value : map.values()) {
                             yAxis.add(value);
                         }
-                        //System.out.println(xAxis);
                         response += String.format(",'xAxis':%s,'yAxis':%s", new Gson().toJson(xAxis),new Gson().toJson(yAxis));
                     }
                     break;
@@ -225,11 +219,7 @@ public class UserController {
                         response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "[]");
 
                     } else {
-                        JsonElement jsonElement = null;
-                        JsonObject jObject = null;
                         response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", "[]");
-//                        jsonElement = JsonParser.parseString();
-//                        jsonObject = jsonElement.getAsJsonObject();
                         JsonArray xAxis = new JsonArray();
                         for (String key : genderMap.keySet()) {
                             xAxis.add(key);
@@ -239,7 +229,6 @@ public class UserController {
                         for (int value : genderMap.values()) {
                             yAxis.add(value);
                         }
-                        //System.out.println(xAxis);
                         response += String.format(",'xAxis':%s,'yAxis':%s", new Gson().toJson(xAxis),new Gson().toJson(yAxis));
                     }
                     break;
@@ -254,11 +243,7 @@ public class UserController {
                         response = String.format(RESPONSE_TEMPLATE, FAILED, "\"No results found\"", requestId, "users", "[]");
 
                     } else {
-                        JsonElement jsonElement = null;
-                        JsonObject jObject = null;
                         response = String.format(RESPONSE_TEMPLATE, SUCCESS, "\"Success\"", requestId, "users", "[]");
-//                        jsonElement = JsonParser.parseString();
-//                        jsonObject = jsonElement.getAsJsonObject();
                         JsonArray xAxis = new JsonArray();
                         for (String key : nationalityMap.keySet()) {
                             xAxis.add(key);
@@ -268,7 +253,6 @@ public class UserController {
                         for (int value : nationalityMap.values()) {
                             yAxis.add(value);
                         }
-                        //System.out.println(xAxis);
                         response += String.format(",'xAxis':%s,'yAxis':%s", new Gson().toJson(xAxis),new Gson().toJson(yAxis));
                     }
                     break;
@@ -286,6 +270,9 @@ public class UserController {
                             break;
                         case 4:
                             response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "users", "[]");
+                            break;
+                        case 5:
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Validation failed\"", requestId, "users", new Gson().toJson(user));
                             break;
                         default:
                             response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not save user details\"", requestId, "users", "[]");
@@ -305,6 +292,9 @@ public class UserController {
                             break;
                         case 4:
                             response = String.format(RESPONSE_TEMPLATE, CONFLICT, "\"Operation not allowed\"", requestId, "users", "[]");
+                            break;
+                        case 5:
+                            response = String.format(RESPONSE_TEMPLATE, BAD_REQUEST, "\"Validation failed\"", requestId, "users",  new Gson().toJson(user));
                             break;
                         default:
                             response = String.format(RESPONSE_TEMPLATE, FAILED, "\"Could not update the user\"", requestId, "users", "[]");

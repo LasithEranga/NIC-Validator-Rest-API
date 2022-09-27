@@ -1,3 +1,5 @@
+//funtion that creates table rows with dynamic data and return as an HTML code string
+
 const TableRow = (user,index) => {
   return `
         <div class=" d-flex py-2 bg-table rounded-0 ps-3 amarnath">

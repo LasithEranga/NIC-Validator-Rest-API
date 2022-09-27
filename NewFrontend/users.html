@@ -56,6 +56,16 @@
         background-color: rgb(224, 202, 255);
         color: black;
       }
+      .tb-body > div:nth-child(odd):hover {
+        background-color: rgb(238, 238, 238);
+        color: black;
+        border: none;
+      }
+      .tb-body > div:nth-child(even):hover {
+        background-color: rgb(204, 167, 255);
+        color: black;
+      }
+      
       .fixed-lines {
         overflow: hidden;
         display: -webkit-box !important;
@@ -280,7 +290,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
-    <script src="./script.js"></script>
+    <script src="./validations.js"></script>
     <script src="./TableRow.js"></script>
     <script src="./pagination.js"></script>
 
@@ -296,15 +306,15 @@
       const paginatedUserCount = document.getElementById("paginatedUserCount");
       const backBtn = document.getElementById("back-btn");
       const forwardBtn = document.getElementById("forward-btn");
-      let rowsPerPage = 8;
-      let btnOffset = 0;
-      let userCount;
-      let noOfPages;
 
       const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
       const addUpdateModal = new bootstrap.Modal(document.getElementById("addUpdateModal"));
       const warningModal = new bootstrap.Modal(document.getElementById("warningModal"));
 
+      let rowsPerPage = 8;
+      let btnOffset = 0;
+      let userCount;
+      let noOfPages;
       let oldNic;
       let userId;
       let formtosubmit;
@@ -317,8 +327,8 @@
         user: {},
       };
 
-      //fetch data from api
-
+      //gets users from the database and creates the pagination
+      //action: allUsers
       const getUsers = async () => {
         requestBody.requestId = (Math.random() * 10000).toFixed(0);
         requestBody.requestDate = new Date().toLocaleString();
@@ -345,6 +355,13 @@
 
       getUsers();
 
+      //gets a set of users from the database.
+      /*
+       * parameters
+       * offset(required) - the number of rows that sql query should skip(already shown to user)
+       * url: http://localhost:8080/RestAPI/NICValidator/user
+       * action: getSetOfUsers
+       */
       const setTableRows = (offset) => {
         requestBody.requestId = (Math.random() * 10000).toFixed(0);
         requestBody.requestDate = new Date().toLocaleString();
@@ -393,18 +410,16 @@
           });
       };
 
+      //sets the pagination content using pagination function defined in pagination.js script
       const setPagination = () => {
         userCount = users.length;
         noOfPages = (userCount / rowsPerPage).toFixed(0);
-        console.log(noOfPages);
-        // if (userCount % rowsPerPage > 0) {
-        //   noOfPages++;
-        // }
         const paginationContent = document.getElementById("paginationContent");
         paginationContent.innerHTML = pagination(noOfPages, rowsPerPage, btnOffset);
         return btnOffset + 1;
       };
 
+      //handles the forward button click in pagination section
       const paginationForwardClickHandler = () => {
         btnOffset++;
         if (btnOffset < noOfPages - 1) {
@@ -415,6 +430,7 @@
         backBtn.classList.add("bg-primary");
         backBtn.classList.remove("bg-secondary");
 
+        //look at future value and disable button 
         if (noOfPages - 1 === btnOffset) {
           forwardBtn.setAttribute("onclick", "");
           forwardBtn.classList.remove("bg-primary");
@@ -422,6 +438,7 @@
         }
       };
 
+      //handles the back button click in pagination section
       const paginationBackClickHandler = () => {
         btnOffset--;
 
@@ -445,7 +462,7 @@
         btnOkay.setAttribute("onClick", `modalOkayButtonClickHandler('${id}')`);
       };
 
-      //removes the details on user confirmation
+      //removes the user details on confirmation
       const modalOkayButtonClickHandler = (id) => {
         requestBody.requestId = (Math.random() * 10000).toFixed(0);
         requestBody.requestDate = new Date().toLocaleString();

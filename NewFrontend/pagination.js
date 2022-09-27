@@ -1,12 +1,14 @@
+//sets the pagination section content. 
+/**
+ * parameters
+ * noOfPages(required) - number of pages needs to render all users
+ * rowsPerPage(requried) - number of rows table contains in one page
+ * offset(default = 0 ) - the value that function starts the pagination.
+ * 
+ */
 const pagination = (noOfPages, rowsPerPage, offset = 0) => {
   let contentHtml = "";
   let btnArray = [];
-  // let noOfPages = (noOfRows / rowsPerPage).toFixed(0);
-  // if (noOfRows % rowsPerPage > 0) {
-  //   noOfPages++;
-  // }
-  // let start = 0;
-  // let end = 0;
 
   //create the array of elemets that contains the buttons
   for (let i = 0; i < noOfPages; i++) {
